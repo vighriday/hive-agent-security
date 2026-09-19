@@ -5,17 +5,15 @@ build-backend = "hatchling.build"
 [project]
 name = "hive-core"
 version = "0.0.0"
-description = "HIVE security-analysis core; domain behaviour is intentionally not yet implemented."
+description = "HIVE security-analysis core: expected-vs-observed graph projection, capability-composition detection, and constrained containment planning."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-  "aiosqlite>=0.20.0,<1.0.0",
   "fastapi>=0.115.0,<1.0.0",
   "networkx>=3.3,<4.0",
   "pydantic>=2.9.0,<3.0.0",
   "pydantic-settings>=2.6.0,<3.0.0",
   "PyYAML>=6.0.0,<7.0.0",
-  "SQLAlchemy>=2.0.0,<3.0.0",
   "uvicorn[standard]>=0.30.0,<1.0.0",
 ]
 
@@ -40,8 +38,9 @@ dev = [
 packages = ["src/hive_core"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --strict-config"
 testpaths = ["tests"]
+pythonpath = ["."]
 asyncio_mode = "auto"
 
 [tool.ruff]

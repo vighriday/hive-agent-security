@@ -1,0 +1,438 @@
+Devpost
+Join a hackathon 
+Host a hackathon 
+Resources 
+ 
+vighriday
+Notifications
+Loading...
+
+TLN Hackathon 2026
+Overview
+My projects
+Participants (323)
+Resources
+Rules
+Project gallery
+Updates
+Discussions
+TLN Hackathon 2026
+Building the Next Generation of Cybersecurity Solutions - TLN Cybersecurity Challenge
+Find teammates
+Who can participate
+Ages 13+ only
+Students only
+Companies/professional organizations excluded from participation
+All countries/territories, excluding standard exceptions 
+View full rules
+Submissions open soon
+View schedule
+
+Sep 19 – 20, 2026
+Online
+Public
+$207,193 in cash	323 participants
+Tech Literacy Network
+Beginner Friendly Cybersecurity Machine Learning/AI
+TLN Cybersecurity Challenge 2026
+Technology is evolving quickly, and so are the threats that come with it.
+
+The TLN Cybersecurity Challenge 2026 is a hackathon hosted by Tech Literacy Network where participants will use cybersecurity, artificial intelligence, and technology to build solutions to real-world problems.
+
+Whether you're interested in cybersecurity, AI, software development, privacy, or problem-solving, this challenge is an opportunity to turn an idea into a working project.
+
+The Challenge
+Build a technology-based solution that addresses a problem related to cybersecurity, online safety, or digital security.
+
+You can use AI as a core part of your project, use it to enhance an existing cybersecurity solution, or build a solution that addresses an emerging threat created by AI.
+
+Some areas you could explore include:
+
+AI-powered cybersecurity
+Phishing and scam detection
+Online privacy and data protection
+Cyberbullying and online safety
+Any other cybersecurity-related problem you want to tackle
+You don't need to build the next major cybersecurity platform. We care more about the problem you're solving, how you approach it, and the impact your solution could have.
+
+Why Participate?
+You'll have the opportunity to:
+
+Build a project from an idea
+Explore AI and cybersecurity
+Work with other students and developers
+Showcase your project
+Receive feedback from judges
+Projects will be evaluated based on their idea, technical implementation, creativity, cybersecurity relevance, and potential impact.
+
+Requirements
+Submission Requirements
+Each team or individual must submit the following:
+
+1. Build a Cybersecurity Solution
+Create a working prototype or demonstration that addresses a clear, real-world problem related to:
+
+Cybersecurity
+Online safety
+Privacy and data protection
+Digital security
+Your project should demonstrate a meaningful attempt to solve the problem, whether through a web application, mobile application, software tool, prototype, or other technology-based solution.
+
+2. Devpost Project Submission
+Your Devpost submission must include:
+
+Project Name - The name of your project.
+Project Description - Briefly explain what you built and why.
+Technologies Used - List the programming languages, frameworks, APIs, tools, and other technologies used.
+3. Project Demo
+Where possible, provide a link that allows judges to explore or test your project.
+
+This could be:
+
+Live website
+Working application
+GitHub repository
+Prototype
+If your project cannot be hosted or made publicly accessible, you can demonstrate it through your submission video instead.
+
+4. Demo Video
+Submit a video under 5 minutes that demonstrates your project and clearly explains:
+
+The Problem - What cybersecurity issue are you addressing?
+Your Solution - What did you build?
+How It Works - Demonstrate the key features.
+Technology - What technologies did you use?
+Impact - Who could benefit from your solution and how?
+5. AI & External Tools Disclosure
+AI tools and other external resources are allowed during the hackathon. However, participants must disclose any significant use of AI tools in their project.
+
+Briefly explain:
+
+Which AI tools were used
+How they were used
+Participants are responsible for understanding their submitted work and should be able to explain their code, design decisions, and overall solution.
+
+Prizes
+$207,193 in prizes
+Grand Prize
+$8,752 in cash
+1 winner
+Each member of the Grand Prize-winning team will receive an SSOJet license, valued at $1,188/year per participant, for a total prize value of $4,752/year. Winners will receive production-grade enterprise SSO infrastructure, including SAML/OIDC integrations, team management, and MCP authentication support.
+
+Each member of the Grand Prize-winning team will also recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+1st Place
+$4,376 in cash
+1 winner
+Each member of the 1st-place team will recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Each member of the 1st-place team will also receive 1 year of DevSwarm Pro, valued at $96 per participant, for a total prize value of $384.
+
+2nd Place
+$4,100 in cash
+1 winner
+Each member of the 2nd-place team will recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Each member of the 2nd-place team will also receive a $25 AoPS coupon, for a total prize value of $100.
+
+3rd Place
+$4,060 in cash
+1 winner
+Each member of the 3rd-place team will recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Each member of the 3rd-place team will also receive a free .xyz domain for one year, valued at $15 per member for upto $60 for a project.
+
+Best Cybersecurity Solution
+$4,045 in cash
+1 winner
+Each member of the Best Cybersecurity Solution team will recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Each member of the Best Cybersecurity Solution team will receive a free .xyz domain for one year, valued at $15 per member for upto $60 for a project.
+
+Best Beginner Project
+$4,060 in cash
+1 winner
+Each member of the Best Beginner Project team will recieve $1000 in Adaption Platform credits, for a total prize value of $4,000. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Each member of the Best Beginner Project team will receive a free .xyz domain for one year, valued at $15 per member for upto $60 for a project.
+
+All Participants
+$508 in cash
+350 winners
+Every participant will receive $500 in Adaption Platform credits. This is a meaningful amount and enough to generate and augment data sets, including multilingual data across 242 languages, and train custom models.
+
+Every participant will also recieve 1 month of DevSwarm Pro, valued at $8 per participant, to support them during the hackathon.
+
+Devpost Achievements
+Submitting to this hackathon could earn you:
+
+
+First online hackathon
+
+X Hackathons
+ level 2
+
+Hackathon Winner
+ level 1
+
+Dual Boot
+
+Dual Boot Winner
+Judges
+Gurnoor Kaur
+Gurnoor Kaur
+Founder & Executive Director @ Tech Literacy Network
+
+Naveen Goel
+Naveen Goel
+Senior Technical Program Manager @ Amazon
+
+ Aatishkumar Dhami 
+Aatishkumar Dhami
+Founding Engineer @ StyleFrame AI
+
+Aishwarya Nair
+Aishwarya Nair
+Senior Data Engineer @ Amazon
+
+Alina Olefirenko
+Alina Olefirenko
+Co-Founder & CTO @ AlpacaRelay
+
+Sai Prasad Saladi
+Sai Prasad Saladi
+Senior Software Engineer @ U.S. Bank
+
+Udaya Bhaskar Vemuri 
+Udaya Bhaskar Vemuri
+Senior Application Security Analyst @ Corteva Agriscience
+
+Urvish Gajjar
+Urvish Gajjar
+Sr. Test Manager @ Health Care Service Corporation (Blue Cross Blue Shield), USA
+
+Jakub Krehel
+Jakub Krehel
+Founding Design Engineer @ Interfere
+
+Judging Criteria
+Impact & Relevance
+How effectively does the project address a real-world cybersecurity problem, and how meaningful could its impact be?
+Technical Implementation
+How well does the project work, and how effectively does it use technology to solve the problem?
+Innovation & Creativity
+How original is the idea, and does it demonstrate creative problem-solving?
+User Experience & Design
+How intuitive, accessible, and practical is the solution for its intended users?
+Presentation & Demo
+How clearly does the team explain the problem, solution, technical decisions, and demonstrate their project?
+Looking for a team?
+Browse Participants or chat on Discord to find teammates.
+
+Find teammates on Discord
+To-dos
+ Join the Discord
+
+ Dismiss
+
+Go Check Our Website!
+
+ Dismiss
+
+Go Follow Us!
+
+ Dismiss
+
+You're registered for this hackathon.
+
+Unregister  Edit registration questions 
+Questions? Email the hackathon manager
+
+Hackathon sponsors
+SSOJet Adaption DevSwarm AoPS .xyz Snap2Wear JetBrains
+This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.
+
+Devpost
+About
+Careers
+Contact
+Help
+Hackathons
+Browse hackathons
+Explore projects
+Host a hackathon
+Hackathon guides
+Portfolio
+Your projects
+Your hackathons
+Settings
+Connect
+ Twitter
+ Discord
+ Facebook
+ LinkedIn
+© 2026 Devpost, Inc. All rights reserved.
+Community guidelines
+Security
+CA notice
+Privacy policy
+Terms of service
+
+Devpost
+Join a hackathon 
+Host a hackathon 
+Resources 
+2 
+vighriday
+Notifications
+Loading...
+
+TLN Hackathon 2026
+Overview
+My projects
+Participants (323)
+Resources
+Rules
+Project gallery
+Updates
+Discussions
+Rules TLN Cybersecurity Challenge 2026 - Rules
+ 
+
+Original work: Projects should be created primarily during the hackathon. Participants may use existing open-source libraries, frameworks, APIs, datasets, and other publicly available resources.
+
+Team size: Participants may work individually or in teams of up to 4 people.
+
+Cybersecurity: Projects should have a meaningful connection to cybersecurity, online safety, privacy, and digital security.
+
+Responsible security research: Projects must not intentionally damage, disrupt, or gain unauthorized access to systems, networks, accounts, or data.
+
+No malicious software: Submissions must not contain malware, ransomware, credential stealers, spyware, or other software intended to cause harm or obtain unauthorized access. 
+
+AI usage: AI tools are permitted. Participants must disclose significant use of AI tools and remain responsible for understanding and presenting their submitted work.
+
+Intellectual property: Participants must have the right to use all code, datasets, images, APIs, and other resources included in their submission.
+
+Respect: Participants must treat other participants, organizers, mentors, judges, and volunteers respectfully.
+
+Judging: Projects will be evaluated based on criteria such as:
+
+Technical implementation
+Creativity and innovation
+Cybersecurity relevance
+Practicality and potential impact
+Quality of the demonstration
+Overall project execution
+Disqualification: Organizers reserve the right to disqualify submissions that violate these rules, applicable laws, or the spirit of the challenge.
+
+Code of Conduct: Participants are expected to maintain a respectful, inclusive, and professional environment throughout the event.
+
+Devpost
+About
+Careers
+Contact
+Help
+Hackathons
+Browse hackathons
+Explore projects
+Host a hackathon
+Hackathon guides
+Portfolio
+Your projects
+Your hackathons
+Settings
+Connect
+ Twitter
+ Discord
+ Facebook
+ LinkedIn
+© 2026 Devpost, Inc. All rights reserved.
+Community guidelines
+Security
+CA notice
+Privacy policy
+Terms of service
+
+
+Devpost
+Join a hackathon 
+Host a hackathon 
+Resources 
+2 
+vighriday
+Notifications
+Loading...
+
+TLN Hackathon 2026
+Overview
+My projects
+Participants (323)
+Resources
+Rules
+Project gallery
+Updates
+Discussions
+Getting Started
+ 
+
+Participants are welcome to use the tools, frameworks, APIs, datasets, and development environments that best fit their project.
+
+Useful Development Tools
+Python - AI, machine learning, automation, and cybersecurity projects
+JavaScript / TypeScript - Web applications
+React - Front-end development
+GitHub - Code hosting and collaboration
+Google Colab - Free cloud-based Python/ML environment
+AI Resources
+Participants can explore:
+
+OpenAI APIs
+Google Gemini
+Hugging Face
+TensorFlow
+PyTorch
+Scikit-learn
+Cybersecurity Learning
+Useful areas to research before beginning include:
+
+OWASP Top 10
+Phishing and social engineering
+Authentication and authorization
+Encryption
+Network security
+Privacy and data protection
+Secure software development
+Project Advice
+Start with the problem, not the technology.
+
+A strong submission should be able to answer three questions:
+
+What problem are you solving?
+Why does it matter?
+Why is your solution a good way to solve it?
+
+Devpost
+About
+Careers
+Contact
+Help
+Hackathons
+Browse hackathons
+Explore projects
+Host a hackathon
+Hackathon guides
+Portfolio
+Your projects
+Your hackathons
+Settings
+Connect
+ Twitter
+ Discord
+ Facebook
+ LinkedIn
+© 2026 Devpost, Inc. All rights reserved.
+Community guidelines
+Security
+CA notice
+Privacy policy
+Terms of service

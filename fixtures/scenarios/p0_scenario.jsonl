@@ -1,0 +1,5 @@
+{"event_id": "ev_01", "sequence": 1, "occurred_at": "2026-09-18T10:00:00Z", "actor": "Support Agent", "action": "read", "target": "Fictional CRM", "context": {"registration": "expected"}, "provenance": {"source": "sdk"}, "result": "success"}
+{"event_id": "ev_02", "sequence": 2, "occurred_at": "2026-09-18T10:05:00Z", "actor": "Support Agent", "action": "write", "target": "Unregistered Shared Scratchpad", "context": {"registration": "unregistered"}, "provenance": {"source": "sdk"}, "result": "success"}
+{"event_id": "ev_03", "sequence": 3, "occurred_at": "2026-09-18T10:10:00Z", "actor": "Reporting Agent", "action": "read", "target": "Unregistered Shared Scratchpad", "context": {"registration": "unregistered"}, "provenance": {"source": "sdk"}, "result": "success"}
+{"event_id": "ev_04", "sequence": 4, "occurred_at": "2026-09-18T10:15:00Z", "actor": "Reporting Agent", "action": "send", "target": "Simulated External Webhook", "context": {"registration": "expected"}, "provenance": {"source": "sdk"}, "result": "success"}
+

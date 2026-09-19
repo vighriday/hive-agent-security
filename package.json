@@ -1,0 +1,23 @@
+{
+  "name": "hive-platform",
+  "version": "0.0.0",
+  "private": true,
+  "description": "HIVE workspace orchestration only; product logic is intentionally not yet implemented.",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22.16.0 <23",
+    "pnpm": ">=11.19.0 <12"
+  },
+  "scripts": {
+    "console:dev": "pnpm --filter @hive/console dev",
+    "console:build": "pnpm --filter @hive/console build",
+    "console:check": "pnpm --filter @hive/console check",
+    "console:test": "pnpm --filter @hive/console test",
+    "check": "pnpm run console:check",
+    "format": "pnpm --filter @hive/console format",
+    "format:write": "pnpm --filter @hive/console format:write"
+  },
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}

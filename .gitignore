@@ -47,3 +47,6 @@ secrets/
 
 # Tool state outside the product
 .veris/
+
+# Internal planning material. Kept locally, not published.
+docs/internal/

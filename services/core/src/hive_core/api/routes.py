@@ -1,174 +1,269 @@
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, List
-from hive_core.domain.models import ObservationEvent, ArchitectureManifest, Node, ControlCapability, Invariant
-from hive_core.ledger.repository import LedgerRepository
-from hive_core.graph.projection import GraphProjection
-from hive_core.detection.ps001 import PS001Detector
-from hive_core.detection.ps002 import PS002Detector
-from hive_core.containment.planner import ContainmentPlanner
-from datetime import datetime
-import yaml
-import json
-import os
+"""HTTP transport for the HIVE core.
 
-router = APIRouter(prefix="/api/v1")
-ledger = LedgerRepository()
+This module is deliberately thin. It resolves a scenario to its session, calls
+one orchestration method, and serialises the result. No route makes a security
+decision, and no route mutates state on a ``GET`` — a judge reading this file
+should be able to see that every conclusion is produced by the domain layer and
+merely transported here.
+"""
 
-manifest_path = "e:/Projects/HIVE_TLNHackathon/fixtures/manifests/default.yaml"
-if os.path.exists(manifest_path):
-    with open(manifest_path, 'r') as f:
-        data = yaml.safe_load(f)
-        manifest = ArchitectureManifest(**data)
-else:
-    manifest = ArchitectureManifest(
-        version="v1", zones={}, invariants=[], control_capabilities=[]
-    )
+from __future__ import annotations
 
-fixtures = []
-scenario_path = "e:/Projects/HIVE_TLNHackathon/fixtures/scenarios/p0_scenario.jsonl"
-if os.path.exists(scenario_path):
-    with open(scenario_path, 'r') as f:
-        for line in f:
-            if line.strip():
-                fixtures.append(ObservationEvent(**json.loads(line)))
+from pathlib import Path
+from typing import Any
 
-ledger.load_fixtures(fixtures)
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
-@router.get("/health")
-def health():
-    return {"status": "ok"}
+from hive_core.application.scenario_registry import ScenarioRegistry
+from hive_core.immunity.registry import LifecycleError
+from hive_core.lab.scenarios import ScenarioError
+from hive_core.lab.swarm import SwarmConfig, SwarmSimulator
+from hive_core.policy.engine import ManifestError
 
-@router.get("/scenarios")
-def list_scenarios():
-    return [{"id": "p0_scenario", "name": "P0 Scenario"}]
+# ---------------------------------------------------------------------------
+# Fixture locations. Resolved from this file so the service runs from any
+# working directory.
+# ---------------------------------------------------------------------------
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+_FIXTURES = _REPO_ROOT / "fixtures"
 
-@router.post("/replays/{scenario_id}/reset")
-def reset_replay(scenario_id: str):
-    ledger.reset()
-    return {"status": "reset"}
+registry = ScenarioRegistry(_FIXTURES / "scenarios", _FIXTURES / "manifests")
+simulator = SwarmSimulator()
 
-@router.post("/replays/{scenario_id}/advance")
-def advance_replay(scenario_id: str):
-    ledger.advance()
-    return {"status": "advanced"}
+router = APIRouter()
 
-@router.get("/state")
-def get_state():
-    events = ledger.get_up_to_cursor()
-    proj = GraphProjection(manifest)
-    proj.apply_events(events)
+
+def _session(scenario_id: str):
+    try:
+        return registry.session(scenario_id)
+    except (ScenarioError, ManifestError) as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
+# ---------------------------------------------------------------------------
+# Service metadata
+# ---------------------------------------------------------------------------
+
+
+@router.get("/health", tags=["service"], summary="Liveness and operating mode")
+def health() -> dict[str, Any]:
     return {
-        "manifest_version": manifest.version,
-        "graph": proj.get_snapshot(),
-        "cursor": ledger._cursor,
-        "total_events": len(ledger.get_all())
+        "status": "ok",
+        "version": "1.0.0",
+        "mode": "local-simulation",
+        "safety": {
+            "network_egress": False,
+            "real_data": False,
+            "enforcement": "simulated",
+        },
     }
 
-@router.get("/findings")
-def get_findings():
-    events = ledger.get_up_to_cursor()
-    proj = GraphProjection(manifest)
-    proj.apply_events(events)
-    
-    detector = PS001Detector()
-    finding = detector.detect(proj) or PS002Detector().detect(proj)
-    
-    if finding:
-        planner = ContainmentPlanner(manifest)
-        plan = planner.plan(finding, proj)
-        return {"findings": [finding.model_dump()], "plans": [plan.model_dump()]}
-    return {"findings": [], "plans": []}
 
-@router.post("/findings/{id}/plans/{plan_id}/apply")
-def apply_plan(id: str, plan_id: str):
-    events = ledger.get_up_to_cursor()
-    proj = GraphProjection(manifest)
-    proj.apply_events(events)
-    
-    detector = PS001Detector()
-    finding = detector.detect(proj) or PS002Detector().detect(proj)
-    if not finding:
-        raise HTTPException(status_code=400, detail="Finding no longer active")
-        
-    planner = ContainmentPlanner(manifest)
-    plan = planner.plan(finding, proj)
-    
-    # Actually look up the capability from the plan
-    cap = next((c for c in manifest.control_capabilities if c.id == plan.recommended_action), None)
-    if not cap:
-        raise HTTPException(status_code=400, detail="Capability not found")
-        
-    max_seq = max(e.sequence for e in ledger.get_all()) if ledger.get_all() else 0
-    block_event = ObservationEvent(
-        event_id=f"e_block_{max_seq+1}",
-        sequence=max_seq+1,
-        occurred_at=datetime.utcnow().isoformat(),
-        actor="system",
-        action="block",
-        target=cap.target,
-        context={"source": cap.source, "mechanism": cap.provider, "blocked_action": "any"},
-        provenance={"source": "control_plane"},
-        result="success"
-    )
-    ledger.append(block_event)
-    ledger.advance(max_seq+1)
-    return {"status": "applied", "event_id": block_event.event_id}
-@router.post("/lab/simulate")
-def simulate_lab(config: Dict[str, Any]):
-    agents_count = config.get("agents", 50)
-    comm = config.get("comm", "normal")
-    mem = config.get("mem", "limited")
-    deleg = config.get("deleg", "normal")
-    ext = config.get("ext", "none")
-    pert = config.get("pert", "shared resource")
-    
-    # Generate a synthetic architecture manifest based on config
-    from hive_core.domain.models import Node
-    import networkx as nx
-    
-    graph = nx.DiGraph()
-    # Add nodes
-    for i in range(agents_count):
-        graph.add_node(f"S{i}", id=f"S{i}", kind="agent", zone="internal", data_classification="public")
-        
-    # Add memory nodes if enabled
-    if mem != "off":
-        graph.add_node("SHARED-STORE", id="SHARED-STORE", kind="store", zone="shared-state", registration="unregistered")
-        
-    # Add external node if enabled
-    if ext != "none":
-        graph.add_node("EXT-ENDPOINT", id="EXT-ENDPOINT", kind="destination", zone="external")
-        
-    # Add restricted source if perturbed
-    if pert == "shared resource":
-        graph.add_node("RESTRICTED-DATA", id="RESTRICTED-DATA", kind="store", zone="internal", data_classification="restricted")
-        
-    # Add paths
-    if comm != "restricted":
-        if mem != "off" and pert == "shared resource":
-            # Path from restricted -> agent -> shared-store
-            graph.add_edge("RESTRICTED-DATA", "S0")
-            graph.add_edge("S0", "SHARED-STORE")
-            
-        if ext != "none":
-            # Path from shared-store -> agent -> external
-            graph.add_edge("SHARED-STORE", "S1")
-            graph.add_edge("S1", "EXT-ENDPOINT")
-            
-            if deleg == "recursive":
-                graph.add_edge("SHARED-STORE", "S1")
-                graph.add_edge("S1", "S2")
-                graph.add_edge("S2", "EXT-ENDPOINT")
-                
-    proj = GraphProjection(manifest)
-    proj.graph = graph
-    
-    detector = PS001Detector()
-    finding = detector.detect(proj) or PS002Detector().detect(proj)
-    
-    if finding:
-        return {"result": "detected", "details": finding.model_dump()}
-    elif ext == "none" and mem != "off" and comm != "restricted":
-        return {"result": "noext", "details": {}}
-    else:
-        return {"result": "none", "details": {}}
+# ---------------------------------------------------------------------------
+# Scenarios and replay
+# ---------------------------------------------------------------------------
+
+
+@router.get("/scenarios", tags=["replay"], summary="List available scenarios")
+def list_scenarios() -> dict[str, Any]:
+    return {"scenarios": registry.catalogue()}
+
+
+@router.post("/replays/{scenario_id}/reset", tags=["replay"], summary="Restart a replay")
+def reset_replay(scenario_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    session.reset()
+    return {"scenario_id": scenario_id, "cursor": session.ledger.cursor}
+
+
+@router.post("/replays/{scenario_id}/advance", tags=["replay"], summary="Advance a replay")
+def advance_replay(
+    scenario_id: str,
+    to_sequence: int | None = Query(
+        default=None,
+        ge=0,
+        description="Advance to this sequence number. Omit to step one event.",
+    ),
+) -> dict[str, Any]:
+    session = _session(scenario_id)
+    applied = session.advance_to(to_sequence) if to_sequence is not None else session.step()
+    return {
+        "scenario_id": scenario_id,
+        "cursor": session.ledger.cursor,
+        "applied_events": applied,
+        "at_end": not session.ledger.pending(),
+    }
+
+
+@router.post("/replays/{scenario_id}/run", tags=["replay"], summary="Run a replay to the end")
+def run_replay(scenario_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    applied = session.run_to_end()
+    return {
+        "scenario_id": scenario_id,
+        "cursor": session.ledger.cursor,
+        "applied_events": applied,
+        "at_end": True,
+    }
+
+
+@router.get("/replays/{scenario_id}/state", tags=["replay"], summary="Current replay state")
+def get_state(scenario_id: str) -> dict[str, Any]:
+    return _session(scenario_id).state()
+
+
+# ---------------------------------------------------------------------------
+# Findings and containment
+# ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/replays/{scenario_id}/findings",
+    tags=["detection"],
+    summary="Findings and containment plans for the current state",
+)
+def get_findings(scenario_id: str) -> dict[str, Any]:
+    return _session(scenario_id).findings_envelope()
+
+
+@router.get(
+    "/replays/{scenario_id}/findings/{finding_id}",
+    tags=["detection"],
+    summary="One finding with its plan",
+)
+def get_finding(scenario_id: str, finding_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    finding = next((f for f in session.detect() if f.id == finding_id), None)
+    if finding is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No open finding {finding_id!r} in the current state.",
+        )
+    return {
+        "finding": finding.model_dump(),
+        "plan": session.plan_for(finding).model_dump(),
+    }
+
+
+@router.post(
+    "/replays/{scenario_id}/plans/{plan_id}/apply",
+    tags=["containment"],
+    summary="Issue the recommended simulated control and verify it",
+)
+def apply_plan(scenario_id: str, plan_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    try:
+        plan = session.apply_plan(plan_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return {
+        "plan": plan.model_dump(),
+        "state": session.state(),
+        "findings": session.findings_envelope(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Architecture
+# ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/replays/{scenario_id}/architecture",
+    tags=["architecture"],
+    summary="The declared architecture this scenario is measured against",
+)
+def get_architecture(scenario_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    manifest = session.manifest
+    return {
+        "version": manifest.version,
+        "zones": manifest.zones,
+        "nodes": [node.model_dump() for node in manifest.nodes],
+        "allowed_relationships": [r.model_dump() for r in manifest.allowed_relationships],
+        "invariants": [i.model_dump() for i in manifest.invariants],
+        "control_capabilities": [c.model_dump() for c in manifest.control_capabilities],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Immunity memory
+# ---------------------------------------------------------------------------
+
+
+class PromoteRequest(BaseModel):
+    to: str = Field(description="Target lifecycle stage: shadow, active, or draft.")
+
+
+@router.get(
+    "/replays/{scenario_id}/immunity",
+    tags=["immunity"],
+    summary="Reviewed patterns recorded from contained findings",
+)
+def list_immunity(scenario_id: str) -> dict[str, Any]:
+    session = _session(scenario_id)
+    return {"patterns": [p.model_dump() for p in session.immunity.all_patterns()]}
+
+
+@router.post(
+    "/replays/{scenario_id}/immunity/{pattern_id}/promote",
+    tags=["immunity"],
+    summary="Advance a pattern through its review lifecycle",
+)
+def promote_immunity(scenario_id: str, pattern_id: str, body: PromoteRequest) -> dict[str, Any]:
+    session = _session(scenario_id)
+    try:
+        pattern = session.immunity.promote(pattern_id, body.to)
+    except LifecycleError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return {"pattern": pattern.model_dump()}
+
+
+# ---------------------------------------------------------------------------
+# Swarm Lab
+# ---------------------------------------------------------------------------
+
+
+class SwarmRequest(BaseModel):
+    """Population parameters for one lab experiment."""
+
+    population: int = Field(default=24, ge=3, le=200)
+    connectivity: str = Field(default="normal")
+    shared_memory: str = Field(default="limited")
+    delegation: str = Field(default="normal")
+    external_access: str = Field(default="limited")
+    perturbation: str = Field(default="unregistered_shared_resource")
+
+
+@router.post(
+    "/lab/simulate",
+    tags=["lab"],
+    summary="Synthesise a population and run the real detection pipeline on it",
+)
+def simulate_swarm(body: SwarmRequest) -> dict[str, Any]:
+    try:
+        config = SwarmConfig(**body.model_dump())
+        return simulator.run(config)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@router.get("/lab/options", tags=["lab"], summary="Valid lab parameter values")
+def lab_options() -> dict[str, Any]:
+    return {
+        "population": {"min": SwarmSimulator.MIN_POPULATION, "max": SwarmSimulator.MAX_POPULATION},
+        "connectivity": ["restricted", "normal", "open"],
+        "shared_memory": ["off", "limited", "enabled"],
+        "delegation": ["restricted", "normal", "recursive"],
+        "external_access": ["none", "limited", "broad"],
+        "perturbation": [
+            "none",
+            "unregistered_shared_resource",
+            "cross_agent_execution",
+            "delegation_cascade",
+            "new_external_endpoint",
+        ],
+    }

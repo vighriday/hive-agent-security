@@ -1,0 +1,271 @@
+<!doctype html>
+<!--
+  Generator for docs/assets/gallery/*.png — the submission image gallery.
+
+  Devpost renders gallery images at 3:2, so raw screenshots letterbox badly and
+  lose their captions. Each card here places one screenshot on a 3:2 canvas in
+  the console's own tokens, with the caption baked in and a tag saying which
+  artefact it came from: engine output, or the overview's conceptual diagrams.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HIVE gallery cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Instrument+Sans:wght@0,400;0,500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #16181c;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+      }
+      .card {
+        width: 1500px;
+        height: 1000px;
+        background: #07080a;
+        color: #edeae3;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .rule {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 4px;
+        background: linear-gradient(90deg, #7ff0c0 0%, #7ff0c0 30%, #23272c 30%, #23272c 100%);
+      }
+      .tag,
+      .mark {
+        position: absolute;
+        top: 42px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12.5px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .tag {
+        left: 56px;
+        color: #7ff0c0;
+      }
+      .tag.concept {
+        color: #f2c46b;
+      }
+      .mark {
+        right: 56px;
+        font-family: Archivo, sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.34em;
+        color: #4d5459;
+      }
+
+      /* Wide sources: the shot sits above its caption. */
+      .card.wide .shot {
+        position: absolute;
+        top: 92px;
+        left: 56px;
+        right: 56px;
+        height: 620px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card.wide .shot img {
+        /* Scale up to the card, not just down: several sources are narrower
+           than the canvas and would otherwise float in the middle of it. */
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        object-fit: contain;
+        border: 1px solid #23272c;
+      }
+      .card.wide .cap {
+        position: absolute;
+        left: 56px;
+        right: 56px;
+        bottom: 68px;
+      }
+
+      /* Tall or square sources: the shot takes the right, the caption the left. */
+      .card.tall .shot {
+        position: absolute;
+        top: 92px;
+        bottom: 72px;
+        right: 56px;
+        width: 760px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .card.tall .shot img {
+        height: 100%;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+        border: 1px solid #23272c;
+      }
+      .card.tall .cap {
+        position: absolute;
+        left: 56px;
+        width: 600px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      h2 {
+        font-family: Archivo, sans-serif;
+        font-weight: 600;
+        font-size: 38px;
+        line-height: 1.06;
+        letter-spacing: -0.022em;
+        color: #f6f3ed;
+      }
+      .card.tall h2 {
+        font-size: 42px;
+      }
+      p {
+        margin-top: 16px;
+        font-size: 19px;
+        line-height: 1.5;
+        color: #9ba1a7;
+        max-width: 95ch;
+      }
+      .card.tall p {
+        max-width: none;
+      }
+      em {
+        font-style: normal;
+        color: #7ff0c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cards"></div>
+
+    <script>
+      // Each entry becomes one 3:2 card. `concept` marks the shots that come
+      // from the overview's conceptual diagrams rather than from the engine.
+      const CARDS = [
+        {
+          id: 'g01',
+          img: '11-individual-vs-population.png',
+          tall: true,
+          concept: true,
+          title: 'Every agent passes. The system still fails.',
+          body: 'Checked one at a time, all three actors are compliant — identity authenticated, tools within grant, behaviour nominal. Connect the same three through shared state and a capability appears that nobody granted. Each check is correct, and each is blind to the others.',
+        },
+        {
+          id: 'g02',
+          img: '00-hero.png',
+          title: 'The console, at the moment the path closes',
+          body: 'Detection, the composed path, the containment options and the ledger that justifies them — all produced by the engine in this repository.',
+        },
+        {
+          id: 'g03',
+          img: '02-detected.png',
+          title: 'Four hops. Three of them are declared architecture.',
+          body: 'Restricted customer data reaches an external destination. No agent exceeded its permissions, and no single-agent policy can see it.',
+        },
+        {
+          id: 'g04',
+          img: '04-finding.png',
+          tall: true,
+          title: 'The finding states what it does not establish',
+          body: 'HIVE observes reported interactions, not payloads. It establishes that the path exists — not that restricted data traversed it, and not that any actor intended it to. Never concludes an agent is malicious.',
+        },
+        {
+          id: 'g05',
+          img: '03-containment.png',
+          title: 'Five controls, ranked by cost. Two of them refused.',
+          body: 'The two that would remove the path by severing declared work are shown and rejected, with the relationship they would break named. Hiding them would be easier and worth less.',
+        },
+        {
+          id: 'g06',
+          img: '07-verified.png',
+          title: 'Verified by re-running the rules, not by trusting the plan',
+          body: 'After the control is issued, detection runs again over the contained graph. The planner predicting success is not accepted as evidence that it worked.',
+        },
+        {
+          id: 'g07',
+          img: '06-contained.png',
+          title: 'One edge severed. The declared workflow intact.',
+          body: 'The undeclared write is gone. The reporting agent still reads what it is meant to read — containment is scoped to the action, not to the pair of nodes.',
+        },
+        {
+          id: 'g08',
+          img: '08-immunity.png',
+          tall: true,
+          title: 'The pattern is recorded as a draft',
+          body: 'HIVE abstracts the structure behind the finding so it can be recognised again. It is a hypothesis, not a proven rule, and promoting it out of draft stays a human decision.',
+        },
+        {
+          id: 'g09',
+          img: '09-lab.png',
+          title: 'Ask before you deploy',
+          body: 'Describe a population you are considering. The lab builds it, observes it, and runs the same detection and containment code as the replay — so the answer is produced, not estimated.',
+        },
+        {
+          id: 'g10',
+          img: '05-signals.png',
+          tall: true,
+          title: 'Weighted factors that sum to one',
+          body: 'The emergence score ranks findings; it is not a probability of attack. The factor list beneath it is what actually explains the ranking, and the total is reconstructible by hand.',
+        },
+        {
+          id: 'g11',
+          img: '01-baseline.png',
+          title: 'The declared architecture, behaving exactly as designed',
+          body: 'Zones run from the trusted interior to the outside world. Nothing has been observed yet — this is the state every check would pass.',
+        },
+        {
+          id: 'g12',
+          img: '12-not-prompt-injection.png',
+          concept: true,
+          title: 'Additive, not replacing',
+          body: 'Model, prompt, identity, tool and data-layer defences all stay necessary. HIVE watches one level up: what the ecosystem becomes while every layer below is working correctly.',
+        },
+        {
+          id: 'g13',
+          img: '13-behavior-graph.png',
+          concept: true,
+          title: 'One graph, continuously rebuilt from observed events',
+          body: 'Agents, data, tools, memory, MCP servers, identities and external systems in a single view — with any node opened to show its grants, its baseline and what it recently touched.',
+        },
+        {
+          id: 'g14',
+          img: '14-research.png',
+          concept: true,
+          title: 'The problem is documented by people who are not us',
+          body: "OWASP's agentic top ten, an open-problems paper, and industry notes on emergent coordination and lateral movement. None of them is affiliated with HIVE, and none of them validates it.",
+        },
+        {
+          id: 'g15',
+          img: '10-overview-hero.png',
+          concept: true,
+          title: 'Security for what happens between agents',
+          body: 'Population-level security for autonomous systems. Deterministic, local-first, and no model call anywhere in the runtime.',
+        },
+      ];
+
+      document.getElementById('cards').innerHTML = CARDS.map(
+        (c) => `
+        <div class="card ${c.tall ? 'tall' : 'wide'}" id="${c.id}">
+          <div class="rule"></div>
+          <div class="tag ${c.concept ? 'concept' : ''}">${
+            c.concept ? 'Overview · conceptual diagram' : 'Engine output'
+          }</div>
+          <div class="mark">HIVE</div>
+          <div class="shot"><img src="../docs/assets/${c.img}" alt=""></div>
+          <div class="cap"><h2>${c.title}</h2><p>${c.body}</p></div>
+        </div>`,
+      ).join('');
+    </script>
+  </body>
+</html>

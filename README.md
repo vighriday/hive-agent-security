@@ -42,8 +42,8 @@ no backend needed, nothing to install
    **Apply recommended control**. That round trip is the product.
 3. [Does it actually work?](#does-it-actually-work) — what is tested, and what
    each gate would catch.
-4. [What HIVE does not do](#what-hive-does-not-do) — the limits, stated by us
-   rather than found by you.
+4. [What HIVE does not do](#what-hive-does-not-do) — the limits, stated up
+   front rather than found by you.
 
 Everything else is supporting detail.
 
@@ -169,7 +169,7 @@ opened to show its grants, its baseline and what it has recently touched.
 
 ![The behaviour graph with a node inspector open on a support agent](docs/assets/13-behavior-graph.png)
 
-**The problem is documented by people who are not us.** OWASP's agentic top ten,
+**The problem is documented by people other than me.** OWASP's agentic top ten,
 an open-problems paper, and three industry notes on emergent coordination and
 lateral movement between agents. The page is explicit that none of them is
 affiliated with HIVE and none of them validates it.

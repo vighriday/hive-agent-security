@@ -132,10 +132,7 @@ class ContainmentPlanner:
         elif not removes:
             reason = "The unsafe path survives this control."
         else:
-            reason = (
-                "Breaks declared relationships that are currently in use: "
-                + ", ".join(broken)
-            )
+            reason = "Breaks declared relationships that are currently in use: " + ", ".join(broken)
 
         return ContainmentCandidate(
             capability_id=capability.id,
@@ -155,11 +152,7 @@ class ContainmentPlanner:
         candidate preserves legitimate work: any declared relationship that
         disappears is collateral damage, and the candidate is rejected for it.
         """
-        return {
-            edge.key
-            for edge in projection.edges
-            if edge.expected_status == "expected"
-        }
+        return {edge.key for edge in projection.edges if edge.expected_status == "expected"}
 
     def _detector_for(self, rule_id: str) -> Detector:
         for detector in self.detectors:
@@ -187,7 +180,5 @@ def apply_control(projection: GraphProjection, capability: ControlCapability) ->
         raise ValueError(
             f"block_edge capability {capability.id!r} must declare 'source' and 'action'"
         )
-    severed = projection.remove_edge(
-        capability.source, capability.target, capability.action
-    )
+    severed = projection.remove_edge(capability.source, capability.target, capability.action)
     return 1 if severed else 0

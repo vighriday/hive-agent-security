@@ -25,11 +25,13 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from hive_core.containment.planner import ContainmentPlanner
+from hive_core.detection.base import Detector
 from hive_core.detection.ps001 import PS001Detector
 from hive_core.detection.ps002 import PS002Detector
 from hive_core.domain.models import (
     ArchitectureManifest,
     ControlCapability,
+    Finding,
     Node,
     ObservationEvent,
     Relationship,
@@ -92,7 +94,8 @@ class SwarmConfig:
     def seed(self) -> int:
         """A stable seed derived from the configuration itself."""
         material = "|".join(
-            str(value) for value in (
+            str(value)
+            for value in (
                 self.population,
                 self.connectivity,
                 self.shared_memory,
@@ -125,14 +128,16 @@ class SwarmSimulator:
         )
 
         rng = random.Random(config.seed())
-        manifest = self._build_manifest(config, rng)
+        manifest = self._build_manifest(config)
         events = self._generate_events(config, manifest, rng)
 
         projection = GraphProjection(manifest)
         projection.apply_events(events)
 
-        detectors = [PS001Detector(), PS002Detector()]
-        findings = [finding for detector in detectors for finding in detector.detect(projection)]
+        detectors: list[Detector] = [PS001Detector(), PS002Detector()]
+        findings: list[Finding] = [
+            finding for detector in detectors for finding in detector.detect(projection)
+        ]
 
         planner = ContainmentPlanner(manifest, detectors)
         plans = [planner.plan(finding, projection) for finding in findings]
@@ -148,12 +153,8 @@ class SwarmSimulator:
             },
             "outcome": "risk_detected" if findings else "no_composition_found",
             "population": {
-                "agents": sum(
-                    1 for node in manifest.nodes if node.kind == "agent"
-                ),
-                "resources": sum(
-                    1 for node in manifest.nodes if node.kind != "agent"
-                ),
+                "agents": sum(1 for node in manifest.nodes if node.kind == "agent"),
+                "resources": sum(1 for node in manifest.nodes if node.kind != "agent"),
                 "observations": len(events),
                 "relationships": len(projection.edges),
                 "undeclared_relationships": sum(
@@ -173,7 +174,7 @@ class SwarmSimulator:
     # Population synthesis
     # ------------------------------------------------------------------
 
-    def _build_manifest(self, config: SwarmConfig, rng: random.Random) -> ArchitectureManifest:
+    def _build_manifest(self, config: SwarmConfig) -> ArchitectureManifest:
         """Declare the architecture this synthetic population is meant to follow."""
         nodes: list[Node] = [
             Node(
@@ -235,15 +236,13 @@ class SwarmSimulator:
             allowed.append(Relationship(source=agent, action="read", target=_RESTRICTED_SOURCE))
             allowed.append(Relationship(source=agent, action="write", target=_APPROVED_STORE))
             allowed.append(Relationship(source=agent, action="read", target=_APPROVED_STORE))
-        for agent in self._egress_holders(config, agents, rng):
+        for agent in self._egress_holders(config, agents):
             allowed.append(Relationship(source=agent, action="send", target=_EXTERNAL_SINK))
         if config.perturbation == "cross_agent_execution":
             for agent in agents:
-                allowed.append(
-                    Relationship(source=agent, action="execute", target=_APPROVED_STORE)
-                )
+                allowed.append(Relationship(source=agent, action="execute", target=_APPROVED_STORE))
 
-        capabilities = self._build_capabilities(config, agents, rng)
+        capabilities = self._build_capabilities(config, agents)
 
         return ArchitectureManifest(
             version=f"synthetic/{config.seed():x}",
@@ -255,7 +254,7 @@ class SwarmSimulator:
         )
 
     def _build_capabilities(
-        self, config: SwarmConfig, agents: list[str], rng: random.Random
+        self, config: SwarmConfig, agents: list[str]
     ) -> list[ControlCapability]:
         """Register the controls an operator would plausibly pre-authorise."""
         if not self._shared_resource_present(config):
@@ -268,13 +267,13 @@ class SwarmSimulator:
                 label=f"Quarantine {_SHARED_RESOURCE}",
                 target=_SHARED_RESOURCE,
                 reversible=True,
-                cost=len(self._shared_memory_users(config, agents, rng)) or 1,
+                cost=len(self._shared_memory_users(config, agents)) or 1,
                 rationale="Isolates the undeclared resource from the whole population.",
             )
         ]
         # A targeted control per depositing agent, so the planner has a genuinely
         # cheaper option than isolating the resource outright.
-        for agent in self._shared_memory_users(config, agents, rng):
+        for agent in self._shared_memory_users(config, agents):
             capabilities.append(
                 ControlCapability(
                     id=f"block-{agent.replace(' ', '-').lower()}-buffer-write",
@@ -323,13 +322,13 @@ class SwarmSimulator:
             )
 
         # Baseline: everyone does declared work.
-        readers = self._record_readers(config, agents, rng)
+        readers = self._record_readers(agents)
         for agent in readers:
             emit(agent, "read", _RESTRICTED_SOURCE, phase="baseline")
         for agent in agents:
             emit(agent, "write", _APPROVED_STORE, phase="baseline")
 
-        egress_holders = self._egress_holders(config, agents, rng)
+        egress_holders = self._egress_holders(config, agents)
         for agent in egress_holders:
             emit(agent, "send", _EXTERNAL_SINK, phase="baseline")
 
@@ -343,9 +342,14 @@ class SwarmSimulator:
 
         # Perturbation: the structural change under test.
         if self._shared_resource_present(config):
-            users = self._shared_memory_users(config, agents, rng)
+            users = self._shared_memory_users(config, agents)
+            # Whoever holds the sensitive input deposits; whoever holds the
+            # onward capability withdraws. That split is what decides whether a
+            # composition can close, so it is derived rather than random.
             depositors = [a for a in users if a in readers] or users[: max(1, len(users) // 2)]
-            withdrawers = [a for a in users if a not in depositors] or users[-1:]
+            withdrawers = [a for a in users if a in egress_holders]
+            if not withdrawers:
+                withdrawers = [a for a in users if a not in depositors] or users[-1:]
 
             for agent in depositors:
                 emit(agent, "discover", _SHARED_RESOURCE, phase="perturbation")
@@ -363,7 +367,9 @@ class SwarmSimulator:
         if config.perturbation == "new_external_endpoint":
             # Egress appears for agents that were never granted it.
             newly_external = [a for a in agents if a not in egress_holders]
-            for agent in rng.sample(newly_external, k=min(len(newly_external), 3)) if newly_external else []:
+            for agent in (
+                rng.sample(newly_external, k=min(len(newly_external), 3)) if newly_external else []
+            ):
                 emit(agent, "send", _EXTERNAL_SINK, phase="perturbation")
 
         # Incidental cross-zone chatter, scaled by the connectivity setting.
@@ -383,23 +389,32 @@ class SwarmSimulator:
             return config.shared_memory != "off"
         return False
 
-    def _shared_memory_users(
-        self, config: SwarmConfig, agents: list[str], rng: random.Random
-    ) -> list[str]:
-        reach = _SHARED_MEMORY_REACH[config.shared_memory]
-        count = max(2, round(len(agents) * reach)) if reach else 0
-        return agents[: min(count, len(agents))]
+    def _shared_memory_users(self, config: SwarmConfig, agents: list[str]) -> list[str]:
+        """Agents that touch the undeclared resource.
 
-    def _egress_holders(
-        self, config: SwarmConfig, agents: list[str], rng: random.Random
-    ) -> list[str]:
+        The cohort is drawn from both ends of the population rather than a
+        contiguous block. Agents that read the restricted source sit at the front
+        and agents holding external capability sit at the back, so a contiguous
+        slice would never contain both — and the lab would report "no risk" for a
+        structural reason that has nothing to do with the configuration under
+        test.
+        """
+        reach = _SHARED_MEMORY_REACH[config.shared_memory]
+        if not reach:
+            return []
+        count = min(max(2, round(len(agents) * reach)), len(agents))
+        head = (count + 1) // 2
+        tail = count - head
+        selected = agents[:head] + (agents[-tail:] if tail else [])
+        # Preserve population order and drop any overlap from a small population.
+        return [agent for agent in agents if agent in set(selected)]
+
+    def _egress_holders(self, config: SwarmConfig, agents: list[str]) -> list[str]:
         reach = _EXTERNAL_REACH[config.external_access]
         count = max(1, round(len(agents) * reach)) if reach else 0
         return agents[-count:] if count else []
 
-    def _record_readers(
-        self, config: SwarmConfig, agents: list[str], rng: random.Random
-    ) -> list[str]:
+    def _record_readers(self, agents: list[str]) -> list[str]:
         """Agents that actually touch the restricted source during the run."""
         return agents[: max(1, len(agents) // 2)]
 
@@ -407,9 +422,7 @@ class SwarmSimulator:
     # Narration
     # ------------------------------------------------------------------
 
-    def _interpret(
-        self, config: SwarmConfig, findings: list[Any], plans: list[Any]
-    ) -> str:
+    def _interpret(self, config: SwarmConfig, findings: list[Any], plans: list[Any]) -> str:
         if not findings:
             if not self._shared_resource_present(config):
                 return (

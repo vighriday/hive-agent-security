@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from hive_core.domain.models import Finding, RiskFactor
+from hive_core.domain.models import Finding, RiskFactor, Severity
 from hive_core.graph.projection import GraphProjection
 
 # ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ def emergence_score(factors: list[RiskFactor]) -> float:
     return round(sum(f.weight for f in factors if f.present), 3)
 
 
-def severity_for(score: float) -> str:
+def severity_for(score: float) -> Severity:
     """Map an emergence score onto the four-level severity scale."""
     if score >= 0.85:
         return "critical"

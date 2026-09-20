@@ -72,8 +72,8 @@ def _architecture(session: ReplayService) -> dict[str, Any]:
     }
 
 
-def record_scenario(scenario_id: str, manifest_path: Path, scenario_path: Path) -> dict[str, Any]:
-    """Replay *scenario_id* end to end, capturing every intermediate state."""
+def record_scenario(manifest_path: Path, scenario_path: Path) -> dict[str, Any]:
+    """Replay a scenario end to end, capturing every intermediate state."""
     session = ReplayService(manifest_path, scenario_path)
 
     steps: list[dict[str, Any]] = []
@@ -145,7 +145,6 @@ def write_snapshot(target: Path = SNAPSHOT_DIR) -> Path:
     for descriptor in catalogue:
         scenario_id = str(descriptor["id"])
         recorded = record_scenario(
-            scenario_id,
             _FIXTURES / "manifests" / f"{descriptor['manifest_id']}.yaml",
             _FIXTURES / "scenarios" / f"{scenario_id}.jsonl",
         )

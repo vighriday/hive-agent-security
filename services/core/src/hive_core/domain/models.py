@@ -47,6 +47,8 @@ Registration = Literal["expected", "unregistered", "unknown"]
 #: rather than matching fixture names, so the rules stay scenario-agnostic.
 Trust = Literal["internal", "untrusted", "external"]
 
+Severity = Literal["low", "medium", "high", "critical"]
+
 
 # ---------------------------------------------------------------------------
 # Architecture manifest
@@ -125,8 +127,12 @@ class ArchitectureManifest(BaseModel):
     def zone_trust(self, zone: str) -> Trust:
         """Trust level declared for *zone*, defaulting to ``internal``."""
         spec = self.zones.get(zone)
-        trust = spec.get("trust", "internal") if isinstance(spec, dict) else "internal"
-        return trust if trust in ("internal", "untrusted", "external") else "internal"
+        declared = spec.get("trust") if isinstance(spec, dict) else None
+        if declared == "untrusted":
+            return "untrusted"
+        if declared == "external":
+            return "external"
+        return "internal"
 
     def allows(self, source: str, action: str, target: str) -> bool:
         """True when the manifest permits this exact relationship."""
@@ -216,7 +222,7 @@ class Finding(BaseModel):
     rule_id: Literal["PS-001", "PS-002"]
     title: str
     status: Literal["open", "contained"]
-    severity: Literal["low", "medium", "high", "critical"]
+    severity: Severity
     manifest_version: str
     detected_at_sequence: int
     risk_factors: list[RiskFactor] = Field(default_factory=list)

@@ -50,7 +50,7 @@ class ScenarioRegistry:
         catalogue = self.catalogue()
         if not catalogue:
             raise ScenarioError(f"No scenario fixtures found in {self.scenarios_dir}.")
-        return catalogue[0]["id"]
+        return str(catalogue[0]["id"])
 
     def session(self, scenario_id: str) -> ReplayService:
         """The live session for *scenario_id*, creating it on first use."""

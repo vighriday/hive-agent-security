@@ -41,7 +41,7 @@ class GraphProjection:
 
     def __init__(self, manifest: ArchitectureManifest) -> None:
         self.manifest = manifest
-        self.graph: nx.MultiDiGraph = nx.MultiDiGraph()
+        self.graph: nx.MultiDiGraph[str] = nx.MultiDiGraph()
         #: ``(source, target, action)`` -> edge record. The canonical edge set;
         #: the networkx graph is kept in lockstep with it.
         self._edges: dict[tuple[str, str, str], ObservedEdge] = {}
@@ -113,9 +113,7 @@ class GraphProjection:
             )
             self._edges[key] = edge
 
-        self.graph.add_edge(
-            event.actor, event.target, key=event.action, **edge.model_dump()
-        )
+        self.graph.add_edge(event.actor, event.target, key=event.action, **edge.model_dump())
 
     def _apply_control(self, event: ObservationEvent) -> None:
         """Sever the relationship named by a HIVE control event.
@@ -239,7 +237,7 @@ class GraphProjection:
             return False
         return nx.has_path(self.graph, source, target)
 
-    def data_flow_graph(self) -> nx.MultiDiGraph:
+    def data_flow_graph(self) -> nx.MultiDiGraph[str]:
         """The interaction graph re-oriented so arrows follow the data.
 
         Interactions are recorded as ``actor --action--> resource``, because that
@@ -250,12 +248,19 @@ class GraphProjection:
         Re-orienting reads is what turns "can restricted data reach the outside
         world?" into an ordinary reachability question. Without it, a CRM has no
         outgoing edges at all and every such query answers no.
-        """
-        from hive_core.detection.base import INGEST_ACTIONS
 
-        flow: nx.MultiDiGraph = nx.MultiDiGraph()
+        Discovery is omitted rather than oriented. Knowing that a resource exists
+        moves no content in either direction, and including it would make a
+        severed write look like an open route simply because the actor still
+        remembers the address.
+        """
+        from hive_core.detection.base import DISCOVERY_ACTIONS, INGEST_ACTIONS
+
+        flow: nx.MultiDiGraph[str] = nx.MultiDiGraph()
         flow.add_nodes_from(self.graph.nodes(data=True))
         for edge in self._edges.values():
+            if edge.action in DISCOVERY_ACTIONS:
+                continue
             if edge.action in INGEST_ACTIONS:
                 flow.add_edge(edge.target, edge.source, key=edge.action, **edge.model_dump())
             else:
@@ -285,12 +290,7 @@ class GraphProjection:
     def snapshot(self) -> dict[str, Any]:
         """A serialisable view of the current projection for transport."""
         return {
-            "nodes": [
-                {**data, "id": node_id}
-                for node_id, data in self.graph.nodes(data=True)
-            ],
-            "edges": [
-                {**edge.model_dump(), "id": edge.key} for edge in self.edges
-            ],
+            "nodes": [{**data, "id": node_id} for node_id, data in self.graph.nodes(data=True)],
+            "edges": [{**edge.model_dump(), "id": edge.key} for edge in self.edges],
             "applied_controls": list(self.applied_controls),
         }

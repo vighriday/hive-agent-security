@@ -52,11 +52,7 @@ class PS002Detector:
         manifest = projection.manifest
 
         executions = sorted(
-            (
-                edge
-                for edge in projection.edges
-                if edge.action in EXECUTE_ACTIONS
-            ),
+            (edge for edge in projection.edges if edge.action in EXECUTE_ACTIONS),
             key=lambda e: (e.first_seen, e.key),
         )
         if not executions:
@@ -102,9 +98,7 @@ class PS002Detector:
     # Path construction
     # ------------------------------------------------------------------
 
-    def _untrusted_upstream(
-        self, projection: GraphProjection, actor: str
-    ) -> ObservedEdge | None:
+    def _untrusted_upstream(self, projection: GraphProjection, actor: str) -> ObservedEdge | None:
         """The earliest read *actor* performed against untrusted or external input.
 
         Its presence is what turns a merely unusual execution relationship into a
@@ -113,8 +107,7 @@ class PS002Detector:
         candidates = [
             edge
             for edge in projection.edges_from(actor, INGEST_ACTIONS)
-            if projection.graph.nodes.get(edge.target, {}).get("trust") in
-            ("untrusted", "external")
+            if projection.graph.nodes.get(edge.target, {}).get("trust") in ("untrusted", "external")
         ]
         return min(candidates, key=lambda e: (e.first_seen, e.key)) if candidates else None
 

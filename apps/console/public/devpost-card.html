@@ -1,0 +1,294 @@
+<!doctype html>
+<!--
+  Source for docs/assets/devpost-thumbnail.png (1200x800, 3:2).
+
+  Devpost renders this small in a gallery, so it is not the social card at a
+  different aspect ratio. The band diagram the console and the social card use
+  is unreadable once shrunk; here the same four hops are laid out as a single
+  left-to-right chain, which survives it.
+
+  The headline is the console's H1 verbatim and the colours are the console's
+  tokens, so the thumbnail cannot drift away from the product.
+
+  Regenerate: serve this and screenshot at exactly 1200x800.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HIVE Devpost thumbnail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Instrument+Sans:wght@0,400;0,500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 800px;
+        overflow: hidden;
+      }
+      body {
+        background: #07080a;
+        color: #edeae3;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        position: relative;
+      }
+      .rule-top {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 4px;
+        background: linear-gradient(90deg, #7ff0c0 0%, #7ff0c0 34%, #23272c 34%, #23272c 100%);
+      }
+      .head {
+        position: absolute;
+        left: 64px;
+        top: 58px;
+        right: 64px;
+      }
+      .mark {
+        font-family: Archivo, sans-serif;
+        font-weight: 600;
+        font-size: 22px;
+        letter-spacing: 0.34em;
+        color: #f6f3ed;
+      }
+      .kicker {
+        margin-top: 11px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #7e858c;
+      }
+      h1 {
+        margin-top: 46px;
+        font-family: Archivo, sans-serif;
+        font-weight: 600;
+        font-size: 74px;
+        line-height: 0.97;
+        letter-spacing: -0.032em;
+        text-transform: uppercase;
+        color: #f6f3ed;
+      }
+      h1 em {
+        font-style: normal;
+        color: #7ff0c0;
+      }
+      .lede {
+        margin-top: 30px;
+        font-size: 20px;
+        line-height: 1.5;
+        color: #9ba1a7;
+        max-width: 58ch;
+      }
+      /* The band the undeclared hop crosses — the one zone worth marking. */
+      .undeclared-band {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 500px;
+        height: 145px;
+        background: rgba(242, 196, 107, 0.04);
+        border-top: 1px solid #1a1e22;
+        border-bottom: 1px solid #1a1e22;
+      }
+      /* The finding this chain is, named the way the console names it. */
+      .eyebrow {
+        position: absolute;
+        left: 64px;
+        top: 452px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #f4543c;
+      }
+      .eyebrow span {
+        color: #4d5459;
+      }
+      /* The sentence the whole project turns on. */
+      .caption {
+        position: absolute;
+        left: 64px;
+        top: 676px;
+        right: 64px;
+        font-size: 18.5px;
+        line-height: 1.5;
+        color: #c9c6bf;
+      }
+      .caption em {
+        font-style: normal;
+        color: #7ff0c0;
+      }
+      .chips {
+        position: absolute;
+        left: 64px;
+        bottom: 44px;
+        display: flex;
+        gap: 10px;
+      }
+      .chip {
+        border: 1px solid #23272c;
+        border-radius: 2px;
+        padding: 8px 14px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7e858c;
+        white-space: nowrap;
+      }
+      .chip.on {
+        border-color: rgba(127, 240, 192, 0.45);
+        color: #7ff0c0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rule-top"></div>
+    <div class="undeclared-band"></div>
+    <div class="eyebrow">PS-001 <span>&middot;</span> The unintended export path</div>
+
+    <div class="head">
+      <div class="mark">HIVE</div>
+      <div class="kicker">Population-level security for autonomous systems</div>
+      <h1>Security for what happens <em>between</em> agents.</h1>
+      <p class="lede">
+        Every action is one its actor is permitted to take. Composed, they form a route from
+        restricted data to the outside world that nobody designed.
+      </p>
+    </div>
+
+    <!--
+      The four hops of the canonical finding, left to right. Solid strokes are
+      relationships the architecture declares; dashed ones are not. Three of the
+      four are permitted — which is the entire argument.
+    -->
+    <svg width="1200" height="800" viewBox="0 0 1200 800" style="position: absolute; inset: 0">
+      <defs>
+        <marker
+          id="tip"
+          viewBox="0 0 8 8"
+          refX="7"
+          refY="4"
+          markerWidth="5.5"
+          markerHeight="5.5"
+          orient="auto-start-reverse"
+        >
+          <path d="M0 0 L8 4 L0 8 z" fill="#f4543c" />
+        </marker>
+      </defs>
+
+      <g
+        font-family="'IBM Plex Mono',monospace"
+        font-size="13"
+        letter-spacing="0.1em"
+        text-anchor="middle"
+      >
+        <path d="M 205 562 L 352 562" stroke="#f4543c" stroke-width="2.4" marker-end="url(#tip)" />
+        <text x="278" y="547" fill="#f4543c">read</text>
+
+        <path
+          d="M 420 562 L 566 562"
+          stroke="#f4543c"
+          stroke-width="2.4"
+          stroke-dasharray="6 5"
+          marker-end="url(#tip)"
+        />
+        <text x="493" y="547" fill="#f2c46b">write</text>
+
+        <path
+          d="M 634 562 L 780 562"
+          stroke="#f4543c"
+          stroke-width="2.4"
+          stroke-dasharray="6 5"
+          marker-end="url(#tip)"
+        />
+        <text x="707" y="547" fill="#f2c46b">read</text>
+
+        <path d="M 848 562 L 995 562" stroke="#f4543c" stroke-width="2.4" marker-end="url(#tip)" />
+        <text x="921" y="547" fill="#f4543c">send</text>
+      </g>
+
+      <g font-family="'IBM Plex Mono',monospace" text-anchor="middle" font-size="14" fill="#c9c6bf">
+        <g transform="translate(171 562)">
+          <rect
+            x="-16"
+            y="-16"
+            width="32"
+            height="32"
+            transform="rotate(45)"
+            fill="#0a0c0e"
+            stroke="#b79cf0"
+            stroke-width="1.6"
+          />
+          <circle r="3.2" fill="#b79cf0" />
+          <text y="48">Customer records</text>
+          <text y="66" font-size="10.5" letter-spacing="0.14em" fill="#b79cf0">RESTRICTED</text>
+        </g>
+
+        <g transform="translate(386 562)">
+          <circle r="19" fill="none" stroke="#f4543c" stroke-width="1" opacity="0.32" />
+          <circle r="19" fill="#0a0c0e" stroke="#f4543c" stroke-width="1.6" />
+          <circle r="3.2" fill="#f4543c" />
+          <text y="48" fill="#f6f3ed">Support Agent</text>
+        </g>
+
+        <g transform="translate(600 562)">
+          <rect
+            x="-16"
+            y="-16"
+            width="32"
+            height="32"
+            transform="rotate(45)"
+            fill="#0a0c0e"
+            stroke="#f2c46b"
+            stroke-width="1.6"
+          />
+          <circle r="3.2" fill="#f2c46b" />
+          <text y="48">Shared scratchpad</text>
+          <text y="66" font-size="10.5" letter-spacing="0.14em" fill="#f2c46b">UNDECLARED</text>
+        </g>
+
+        <g transform="translate(814 562)">
+          <circle r="19" fill="none" stroke="#f4543c" stroke-width="1" opacity="0.32" />
+          <circle r="19" fill="#0a0c0e" stroke="#f4543c" stroke-width="1.6" />
+          <circle r="3.2" fill="#f4543c" />
+          <text y="48" fill="#f6f3ed">Reporting Agent</text>
+        </g>
+
+        <g transform="translate(1029 562)">
+          <rect
+            x="-16"
+            y="-16"
+            width="32"
+            height="32"
+            fill="#0a0c0e"
+            stroke="#f4543c"
+            stroke-width="1.6"
+          />
+          <circle r="3.2" fill="#f4543c" />
+          <text y="48" fill="#f6f3ed">External destination</text>
+        </g>
+      </g>
+    </svg>
+
+    <p class="caption">
+      Three of these four hops are <em>declared architecture</em>. No single agent broke a rule.
+    </p>
+
+    <div class="chips">
+      <span class="chip on">detect</span>
+      <span class="chip on">contain</span>
+      <span class="chip on">verify</span>
+      <span class="chip">no LLM at runtime</span>
+    </div>
+  </body>
+</html>

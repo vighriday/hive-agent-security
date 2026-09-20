@@ -2,21 +2,32 @@
 
 **Security for what happens *between* agents.**
 
+[![CI](https://github.com/vighriday/hive-agent-security/actions/workflows/ci.yml/badge.svg)](https://github.com/vighriday/hive-agent-security/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-7FF0C0?style=flat-square)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3c444b?style=flat-square)](services/core/pyproject.toml)
 [![React 19](https://img.shields.io/badge/react-19-3c444b?style=flat-square)](apps/console/package.json)
 [![Tests 231](https://img.shields.io/badge/tests-231%20passing-7FF0C0?style=flat-square)](#does-it-actually-work)
 [![No LLM at runtime](https://img.shields.io/badge/runtime-no%20LLM%2C%20no%20network-F2C46B?style=flat-square)](#built-with)
+[![Live console](https://img.shields.io/badge/live%20console-open-7FF0C0?style=flat-square)](https://vighriday.github.io/hive-agent-security/)
 
 An AI security engineer can already tell whether *one* agent is allowed to do
 *one* thing. HIVE answers a question no single-agent policy can: **has this
 population of agents quietly composed a capability nobody granted it?**
 
-![The HIVE console with a composed risk path highlighted](docs/assets/00-hero.png)
+<!-- Self-playing. Twelve seconds, no video: baseline, emergence, finding, containment. -->
+![HIVE detecting a composed capability path and containing it](docs/assets/replay.svg)
+
+<div align="center">
+
+**[Open the live console →](https://vighriday.github.io/hive-agent-security/)**  ·  no backend needed, nothing to install
+
+</div>
 
 > [!NOTE]
 > Everything here runs locally against fictional fixtures. HIVE contacts no
 > external system, reads no real data, and every control it issues is simulated.
+> Tooling used to build it is listed in full under
+> [AI and external tools disclosure](#ai-and-external-tools-disclosure).
 
 ---
 
@@ -50,7 +61,7 @@ That is the class of risk HIVE exists to find.
 
 | Where | What you get |
 | --- | --- |
-| **Hosted console** | `<!-- paste your GitHub Pages URL here after the first deploy -->` |
+| **Hosted console** | **<https://vighriday.github.io/hive-agent-security/>** |
 | **Runs offline** | The page ships with the engine's recorded output at every replay position — fully interactive, no backend |
 | **Local, live** | Two commands, below |
 
@@ -82,6 +93,11 @@ and everything still works.
 ---
 
 ## Watch it happen
+
+That sequence is not an illustration of the product — it *is* the product.
+Here it is running:
+
+![The HIVE console with a composed risk path highlighted](docs/assets/00-hero.png)
 
 **1 — Baseline.** The declared architecture, doing exactly what it was designed
 to do. Zones run from the trusted interior at the top to the outside world at

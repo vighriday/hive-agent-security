@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "HIVE security console: replay, interaction map, finding inspection, and constrained containment.",
+  "description": "HIVE security console: zone-banded interaction map, deterministic replay, evidence-linked findings, and constrained containment.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "tsc -b && vite build",
@@ -46,5 +46,21 @@
     "typescript-eslint": ">=8.0.0 <9.0.0",
     "vite": ">=7.0.0 <8.0.0",
     "vitest": ">=3.0.0 <4.0.0"
-  }
+  },
+  "keywords": [
+    "ai-security",
+    "agent-security",
+    "security-console",
+    "graph-visualization",
+    "react"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vighriday/hive-agent-security.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vighriday/hive-agent-security/issues"
+  },
+  "homepage": "https://vighriday.github.io/hive-agent-security/"
 }

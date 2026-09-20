@@ -2,7 +2,7 @@
   "name": "hive-platform",
   "version": "0.0.0",
   "private": true,
-  "description": "HIVE: population-level security for autonomous agent estates.",
+  "description": "HIVE: detects risky capabilities that emerge between individually legitimate AI agents, and contains them with the smallest pre-authorised action that preserves declared work.",
   "packageManager": "pnpm@11.19.0",
   "engines": {
     "node": ">=22.16.0 <23",
@@ -16,5 +16,27 @@
     "console:e2e": "pnpm --filter @hive/console test:e2e",
     "check": "pnpm run console:check",
     "format:write": "pnpm --filter @hive/console format:write"
+  },
+  "keywords": [
+    "ai-security",
+    "agent-security",
+    "multi-agent-systems",
+    "ai-agents",
+    "llm-security",
+    "cybersecurity",
+    "threat-detection",
+    "prompt-injection",
+    "data-exfiltration",
+    "graph-analysis",
+    "defensive-security",
+    "agentic-ai"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vighriday/hive-agent-security.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vighriday/hive-agent-security/issues"
   }
 }

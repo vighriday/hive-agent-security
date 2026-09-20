@@ -531,6 +531,12 @@ The ones that carry weight:
 
 CI runs formatter, linter, `mypy --strict`, and every suite above on each push.
 
+Don't want to run any of it? The
+[v1.0.0 release](https://github.com/vighriday/hive-agent-security/releases/tag/v1.0.0)
+carries a verification bundle — the raw output of every command above, plus the
+drift gates regenerating the contract and the recorded demo and diffing them to
+nothing. It is there so these claims can be checked without installing a thing.
+
 ---
 
 ## What HIVE does not do

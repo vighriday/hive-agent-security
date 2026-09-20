@@ -1,33 +1,63 @@
-# HIVE Core
+# HIVE core
 
-This is the Python 3.12 home for HIVE's API-first modular monolith. The package configuration intentionally declares the agreed local-first stack without adding any runtime behaviour.
+The security analysis engine. Python 3.12, FastAPI, NetworkX, Pydantic v2.
 
-## Intended module map
+Nothing here calls a model, reaches the network, or touches a real system.
+Detection, planning and verification are deterministic code over checked-in
+fictional fixtures.
 
-```text
-src/hive_core/
-  api/            FastAPI transport boundary
-  application/    use-case orchestration and transaction boundaries
-  domain/         pure models, invariants, and ports
-  ingest/         observation validation, provenance, redaction, deduplication
-  ledger/         append/read/replay ports and SQLite adapter
-  graph/          rebuildable projections and GraphAlgorithmPort
-  detection/      typed predicates, factors, and evidence construction
-  containment/    candidate evaluation and verification state machine
-  policy/         manifest parsing and future OPA adapter
-  connectors/     simulated/local control adapters only
-  lab/            deterministic experiments and perturbations
-  immunity/       reviewed pattern lifecycle
+## Run it
+
+```bash
+uv sync --group dev
+uv run uvicorn hive_core.main:app --port 8000
 ```
 
-The first implementation belongs in `domain/` and tests, not in an HTTP route. Do not create a route, fixture, or detector until the canonical contracts are agreed and the corresponding test exists.
+`http://127.0.0.1:8000/docs` is the generated API reference.
 
-## Planned commands after implementation begins
+## Check it
 
-```powershell
-uv sync --project services/core --group dev
-uv run --project services/core ruff check .
-uv run --project services/core ruff format --check .
-uv run --project services/core mypy src tests
-uv run --project services/core pytest
+```bash
+uv run ruff format --check src tests
+uv run ruff check src tests
+uv run mypy                       # strict over the product code
+uv run pytest -q                  # 193 tests
 ```
+
+## Regenerate what is derived
+
+```bash
+uv run python -m hive_core.contract   # contracts/openapi/hive-core-v1.json
+uv run python -m hive_core.snapshot   # the console's recorded demo
+```
+
+Both are checked in, and CI fails if either has drifted from the code.
+
+## Module map
+
+Dependencies point inward. `domain/` imports nothing from the web, graph,
+persistence or connector layers; everything else depends on it.
+
+| Module | Owns |
+| --- | --- |
+| `domain/` | The typed security vocabulary and nothing else |
+| `ingest/` | Validation, redaction and provenance — the trust boundary |
+| `ledger/` | The append-only evidence log and its replay cursor |
+| `graph/` | The MultiDiGraph projection, keyed by action, plus the data-flow orientation |
+| `detection/` | PS-001, PS-002, and the shared weighted scoring |
+| `containment/` | Counterfactual planning, and the single definition of what a control does |
+| `policy/` | Manifest loading, validation, and invariant witnesses |
+| `connectors/` | The simulated control point |
+| `immunity/` | The reviewed pattern lifecycle |
+| `lab/` | Scenario loading and synthetic population experiments |
+| `application/` | Orchestration — the only layer that knows the order of operations |
+| `api/` | Transport. No security decision is made here |
+
+## Tests
+
+| Path | Covers |
+| --- | --- |
+| `tests/unit/` | Each module's own guarantees, including the necessary-condition tests that make a rule go silent when any precondition is removed |
+| `tests/integration/` | The operator journey over real HTTP |
+| `tests/property/` | Invariants over arbitrary generated event streams |
+| `tests/contract/` | The committed OpenAPI document and the shipped examples |

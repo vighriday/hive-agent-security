@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-7FF0C0?style=flat-square)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3c444b?style=flat-square)](services/core/pyproject.toml)
 [![React 19](https://img.shields.io/badge/react-19-3c444b?style=flat-square)](apps/console/package.json)
-[![Tests 229](https://img.shields.io/badge/tests-229%20passing-7FF0C0?style=flat-square)](#does-it-actually-work)
+[![Tests 231](https://img.shields.io/badge/tests-231%20passing-7FF0C0?style=flat-square)](#does-it-actually-work)
 [![No LLM at runtime](https://img.shields.io/badge/runtime-no%20LLM%2C%20no%20network-F2C46B?style=flat-square)](#built-with)
 
 An AI security engineer can already tell whether *one* agent is allowed to do
@@ -369,11 +369,11 @@ Two things it will tell you that a dashboard would not:
 
 ## Does it actually work?
 
-**229 tests.** The suite is organised around what HIVE claims, not around its
+**231 tests.** The suite is organised around what HIVE claims, not around its
 modules.
 
 ```bash
-cd services/core && uv run pytest -q     # 193 passed
+cd services/core && uv run pytest -q     # 195 passed
 cd apps/console  && pnpm test            #  23 passed
 cd apps/console  && pnpm test:e2e        #  13 passed
 ```
@@ -390,8 +390,10 @@ The ones that carry weight:
 - **Scoped containment.** Severing the write must leave the *discover* between
   the same two nodes intact.
 - **Determinism.** Two independent sessions, and one session reset and replayed,
-  must produce identical fingerprints. Stepping event-by-event must converge on
-  the same state as jumping.
+  must produce identical conclusions. Stepping event-by-event must converge on
+  the same state as jumping. And the whole ledger — including the control HIVE
+  issued and the pattern it recorded — must come out **byte-identical** across
+  two detect-contain cycles, which is why nothing in it is stamped from a clock.
 - **Rule and invariant agree.** Two independently implemented checks of the same
   claim are compared at all twelve replay positions.
 - **No malice claimed.** Finding prose is asserted not to contain *malicious*,

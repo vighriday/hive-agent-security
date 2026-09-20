@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "HIVE security console shell; feature implementation intentionally begins later.",
+  "description": "HIVE security console: replay, interaction map, finding inspection, and constrained containment.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "tsc -b && vite build",
@@ -15,12 +15,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "check": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm run test"
+    "check": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm run test",
+    "snapshot": "cd ../../services/core && uv run python -m hive_core.snapshot"
   },
   "dependencies": {
-    "@tanstack/react-query": ">=5.0.0 <6.0.0",
     "@tailwindcss/vite": ">=4.0.0 <5.0.0",
-    "@xyflow/react": ">=12.0.0 <13.0.0",
     "react": ">=19.0.0 <20.0.0",
     "react-dom": ">=19.0.0 <20.0.0",
     "zustand": ">=5.0.0 <6.0.0"
@@ -28,6 +27,9 @@
   "devDependencies": {
     "@eslint/js": ">=9.0.0 <10.0.0",
     "@playwright/test": ">=1.0.0 <2.0.0",
+    "@testing-library/jest-dom": ">=6.0.0 <7.0.0",
+    "@testing-library/react": ">=16.0.0 <17.0.0",
+    "@testing-library/user-event": ">=14.0.0 <15.0.0",
     "@types/node": ">=22.0.0 <23.0.0",
     "@types/react": ">=19.0.0 <20.0.0",
     "@types/react-dom": ">=19.0.0 <20.0.0",
@@ -37,6 +39,7 @@
     "eslint-plugin-react-refresh": ">=0.4.0 <1.0.0",
     "globals": ">=15.0.0 <17.0.0",
     "jsdom": ">=25.0.0 <27.0.0",
+    "playwright": ">=1.55.0 <2.0.0",
     "prettier": ">=3.0.0 <4.0.0",
     "tailwindcss": ">=4.0.0 <5.0.0",
     "typescript": ">=5.0.0 <6.0.0",

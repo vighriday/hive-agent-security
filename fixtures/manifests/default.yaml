@@ -15,26 +15,32 @@ version: "support-estate/v1"
 # node names, so the rules stay independent of this particular scenario.
 zones:
   support:
+    order: 1
     label: Support
     trust: internal
     description: Handles customer tickets using customer context.
   analytics:
+    order: 2
     label: Analytics
     trust: internal
     description: Aggregates ticket outcomes into internal reporting.
   reporting:
+    order: 3
     label: Reporting
     trust: internal
     description: Distributes approved aggregate reports.
   approved-state:
+    order: 4
     label: Approved state
     trust: internal
     description: Storage the architecture sanctions for hand-offs.
   shared-state:
+    order: 5
     label: Shared state
     trust: untrusted
     description: Ad-hoc storage that no approved workflow relies on.
   external:
+    order: 6
     label: External
     trust: external
     description: Anything outside the estate boundary.

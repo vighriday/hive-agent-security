@@ -15,6 +15,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from hive_core.application.replay_service import ReplayService
 from hive_core.application.scenario_registry import ScenarioRegistry
 from hive_core.immunity.registry import LifecycleError
 from hive_core.lab.scenarios import ScenarioError
@@ -34,7 +35,7 @@ simulator = SwarmSimulator()
 router = APIRouter()
 
 
-def _session(scenario_id: str):
+def _session(scenario_id: str) -> ReplayService:
     try:
         return registry.session(scenario_id)
     except (ScenarioError, ManifestError) as exc:
@@ -92,7 +93,7 @@ def advance_replay(
         "scenario_id": scenario_id,
         "cursor": session.ledger.cursor,
         "applied_events": applied,
-        "at_end": not session.ledger.pending(),
+        "at_end": session.at_end,
     }
 
 

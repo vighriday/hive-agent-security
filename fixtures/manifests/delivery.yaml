@@ -11,26 +11,32 @@ version: "delivery-estate/v1"
 
 zones:
   research:
+    order: 1
     label: Research
     trust: internal
     description: Gathers context from sanctioned public sources.
   planning:
+    order: 2
     label: Planning
     trust: internal
     description: Turns research into approved work items.
   build:
+    order: 3
     label: Build
     trust: internal
     description: Executes approved work items and publishes artifacts.
   approved-state:
+    order: 4
     label: Approved state
     trust: internal
     description: Storage the architecture sanctions for hand-offs.
   shared-state:
+    order: 5
     label: Shared state
     trust: untrusted
     description: Ad-hoc storage that no approved workflow relies on.
   external:
+    order: 6
     label: External
     trust: external
     description: Anything outside the estate boundary.

@@ -49,6 +49,12 @@ class ReplayService:
         self.planner = ContainmentPlanner(self.manifest, self.detectors)
         self.immunity = ImmunityRegistry()
 
+        #: Highest sequence in the scenario itself. Control events are appended
+        #: above this band, so the replay bound must come from the fixture
+        #: rather than from the end of the ledger — otherwise issuing a control
+        #: makes the replay look unfinished.
+        self._replay_bound = max((event.sequence for event in self._fixture), default=0)
+
         self.ledger = LedgerRepository()
         self.graph = GraphProjection(self.manifest)
         self.adapter = SimulatedControlAdapter(self.ledger, self.manifest.control_capabilities)
@@ -92,7 +98,12 @@ class ReplayService:
 
     def run_to_end(self) -> list[dict[str, Any]]:
         """Fast-forward through the remainder of the fixture."""
-        return self.advance_to(self.ledger.last_sequence)
+        return self.advance_to(self._replay_bound)
+
+    @property
+    def at_end(self) -> bool:
+        """True when the cursor has passed every scenario event."""
+        return self.ledger.cursor >= self._replay_bound
 
     # ------------------------------------------------------------------
     # Reading
@@ -104,9 +115,10 @@ class ReplayService:
             "scenario_id": self.scenario_id,
             "manifest_version": self.manifest.version,
             "cursor": self.ledger.cursor,
-            "last_sequence": self.ledger.last_sequence,
+            "last_sequence": self._replay_bound,
             "replayed_events": len(self.ledger.replayed()),
-            "total_events": self.ledger.total,
+            "total_events": len(self._fixture),
+            "at_end": self.at_end,
             "graph": self.graph.snapshot(),
             "timeline": [event.model_dump() for event in self.ledger.all_events()],
             "invariants": self.policy.check_invariants(self.graph),

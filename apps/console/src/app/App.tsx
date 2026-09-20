@@ -106,9 +106,13 @@ export function App() {
 
       <header className="sticky top-0 z-40 border-b border-rule bg-ground/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1680px] flex-wrap items-center gap-x-5 gap-y-2 px-6 py-3">
-          <span className="font-display text-[15px] font-semibold tracking-[0.24em] text-ink-bright">
+          {/* The wordmark returns to the overview, which is the page above this one. */}
+          <a
+            href="../"
+            className="font-display text-[15px] font-semibold tracking-[0.24em] text-ink-bright transition-colors hover:text-mint"
+          >
             HIVE
-          </span>
+          </a>
           <span className="hidden font-mono text-[10.5px] leading-tight text-muted-deep sm:block">
             Population-level security
             <br />

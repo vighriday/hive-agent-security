@@ -1,9 +1,17 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { App } from './app/App'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+import { App } from './app/App';
+import { ErrorBoundary } from './app/ErrorBoundary';
+import './index.css';
+
+const container = document.getElementById('root');
+if (!container) throw new Error('No #root element to mount the console into.');
+
+createRoot(container).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </React.StrictMode>,
+);

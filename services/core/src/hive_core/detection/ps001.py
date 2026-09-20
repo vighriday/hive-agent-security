@@ -81,9 +81,7 @@ class PS001Detector:
                     continue
 
                 for withdrawal in withdrawals:
-                    egress = self._egress_to_external(
-                        projection, withdrawal.source, external_sinks
-                    )
+                    egress = self._egress_to_external(projection, withdrawal.source, external_sinks)
                     if egress is None:
                         continue
 
@@ -205,9 +203,7 @@ class PS001Detector:
                 present=bool(unexpected_hops),
                 weight=0.15,
                 detail=(
-                    ", ".join(
-                        f"{s.source} --{s.action}--> {s.target}" for s in unexpected_hops
-                    )
+                    ", ".join(f"{s.source} --{s.action}--> {s.target}" for s in unexpected_hops)
                     or "every hop is a declared relationship"
                 ),
             ),

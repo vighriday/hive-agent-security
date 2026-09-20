@@ -83,9 +83,7 @@ class SimulatedControlAdapter:
 
     # ------------------------------------------------------------------
 
-    def _control_event(
-        self, capability: ControlCapability, plan_id: str
-    ) -> ObservationEvent:
+    def _control_event(self, capability: ControlCapability, plan_id: str) -> ObservationEvent:
         """Build the ledger event that describes this control action.
 
         The context carries the precise edge to sever so that replaying the

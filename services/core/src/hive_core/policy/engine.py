@@ -41,9 +41,7 @@ class PolicyEngine:
         self._check_consistency(manifest, manifest_path)
         return manifest
 
-    def _check_consistency(
-        self, manifest: ArchitectureManifest, source: Path
-    ) -> None:
+    def _check_consistency(self, manifest: ArchitectureManifest, source: Path) -> None:
         """Reject a manifest that references nodes it does not declare.
 
         A control capability pointing at a node that does not exist would look
@@ -88,21 +86,18 @@ class PolicyEngine:
     # Invariant evaluation
     # ------------------------------------------------------------------
 
-    def check_invariants(
-        self, projection: GraphProjection
-    ) -> list[dict[str, object]]:
+    def check_invariants(self, projection: GraphProjection) -> list[dict[str, object]]:
         """Evaluate every manifest invariant against the current projection.
 
         An invariant is violated when a directed path runs from a node of the
         named data classification, through a bridge with the named registration
         status, to a node in the named sink zone.
         """
-        graph = projection.graph
         manifest = projection.manifest
         results: list[dict[str, object]] = []
 
         for invariant in manifest.invariants:
-            witness = self._find_witness(graph, projection, invariant)
+            witness = self._find_witness(projection, invariant)
             results.append(
                 {
                     "invariant": invariant.model_dump(),
@@ -122,7 +117,6 @@ class PolicyEngine:
 
     def _find_witness(
         self,
-        graph: nx.MultiDiGraph,
         projection: GraphProjection,
         invariant: Invariant,
     ) -> list[str] | None:
@@ -140,20 +134,14 @@ class PolicyEngine:
 
         flow = projection.data_flow_graph()
 
-        sources = sorted(
-            projection.nodes_where(data_classification=invariant.source_data_class)
-        )
+        sources = sorted(projection.nodes_where(data_classification=invariant.source_data_class))
         bridges = sorted(
             projection.nodes_where(registration=invariant.required_bridge_registration)
         )
         sinks = sorted(projection.nodes_where(zone=invariant.sink_zone))
 
         def reaches(start: str, end: str) -> bool:
-            return (
-                flow.has_node(start)
-                and flow.has_node(end)
-                and nx.has_path(flow, start, end)
-            )
+            return flow.has_node(start) and flow.has_node(end) and nx.has_path(flow, start, end)
 
         for source in sources:
             for bridge in bridges:

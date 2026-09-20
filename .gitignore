@@ -50,3 +50,8 @@ secrets/
 
 # Internal planning material. Kept locally, not published.
 docs/internal/
+
+# Local tooling scratch
+.playwright-mcp/
+test-results/
+apps/console/test-results/

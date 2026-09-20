@@ -2,7 +2,7 @@
   "name": "hive-platform",
   "version": "0.0.0",
   "private": true,
-  "description": "HIVE workspace orchestration only; product logic is intentionally not yet implemented.",
+  "description": "HIVE: population-level security for autonomous agent estates.",
   "packageManager": "pnpm@11.19.0",
   "engines": {
     "node": ">=22.16.0 <23",
@@ -13,11 +13,8 @@
     "console:build": "pnpm --filter @hive/console build",
     "console:check": "pnpm --filter @hive/console check",
     "console:test": "pnpm --filter @hive/console test",
+    "console:e2e": "pnpm --filter @hive/console test:e2e",
     "check": "pnpm run console:check",
-    "format": "pnpm --filter @hive/console format",
     "format:write": "pnpm --filter @hive/console format:write"
-  },
-  "dependencies": {
-    "playwright": "^1.63.0"
   }
 }

@@ -8,7 +8,8 @@
 [![React 19](https://img.shields.io/badge/react-19-3c444b?style=flat-square)](apps/console/package.json)
 [![Tests 231](https://img.shields.io/badge/tests-231%20passing-7FF0C0?style=flat-square)](#does-it-actually-work)
 [![No LLM at runtime](https://img.shields.io/badge/runtime-no%20LLM%2C%20no%20network-F2C46B?style=flat-square)](#built-with)
-[![Live console](https://img.shields.io/badge/live%20console-open-7FF0C0?style=flat-square)](https://vighriday.github.io/hive-agent-security/)
+[![Live console](https://img.shields.io/badge/live%20console-open-7FF0C0?style=flat-square)](https://vighriday.github.io/hive-agent-security/console/)
+[![Overview](https://img.shields.io/badge/overview-read-B79CF0?style=flat-square)](https://vighriday.github.io/hive-agent-security/)
 
 An AI security engineer can already tell whether *one* agent is allowed to do
 *one* thing. HIVE answers a question no single-agent policy can: **has this
@@ -19,7 +20,9 @@ population of agents quietly composed a capability nobody granted it?**
 
 <div align="center">
 
-**[Open the live console →](https://vighriday.github.io/hive-agent-security/)**  ·  no backend needed, nothing to install
+**[Open the live console →](https://vighriday.github.io/hive-agent-security/console/)**  ·  **[Read the overview →](https://vighriday.github.io/hive-agent-security/)**
+
+no backend needed, nothing to install
 
 </div>
 
@@ -61,7 +64,8 @@ That is the class of risk HIVE exists to find.
 
 | Where | What you get |
 | --- | --- |
-| **Hosted console** | **<https://vighriday.github.io/hive-agent-security/>** |
+| **Hosted console** | **<https://vighriday.github.io/hive-agent-security/console/>** — step the replay, contain the finding, watch it verify |
+| **Overview** | **<https://vighriday.github.io/hive-agent-security/>** — what the problem is and why composition is the unit of analysis |
 | **Runs offline** | The page ships with the engine's recorded output at every replay position — fully interactive, no backend |
 | **Local, live** | Two commands, below |
 

@@ -39,7 +39,8 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/vighriday/hive-agent-security"
-"Live console" = "https://vighriday.github.io/hive-agent-security/"
+"Live console" = "https://vighriday.github.io/hive-agent-security/console/"
+Overview = "https://vighriday.github.io/hive-agent-security/"
 Source = "https://github.com/vighriday/hive-agent-security"
 Issues = "https://github.com/vighriday/hive-agent-security/issues"
 

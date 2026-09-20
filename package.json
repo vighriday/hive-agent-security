@@ -11,6 +11,7 @@
   "scripts": {
     "console:dev": "pnpm --filter @hive/console dev",
     "console:build": "pnpm --filter @hive/console build",
+    "build": "pnpm run console:build && node scripts/build-site.mjs",
     "console:check": "pnpm --filter @hive/console check",
     "console:test": "pnpm --filter @hive/console test",
     "console:e2e": "pnpm --filter @hive/console test:e2e",

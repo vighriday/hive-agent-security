@@ -157,6 +157,23 @@ Every check on the left is blind to the others.
 
 ![Individual view passing three of three while the population view shows a path emerging](docs/assets/11-individual-vs-population.png)
 
+**And you cannot close the gap by reviewing harder.** The thing that has to be
+checked is not the agents, it is the pairs between them — and that count grows
+quadratically:
+
+$$\binom{n}{2} \;=\; \frac{n(n-1)}{2} \qquad 10 \rightarrow 45 \qquad 50 \rightarrow 1{,}225 \qquad 100 \rightarrow 4{,}950$$
+ightarrow 45 \qquad 50 
+ightarrow 1{,}225 \qquad 100 
+ightarrow 4{,}950$$
+
+Ten agents is a conversation. A hundred is four and a half thousand possible
+pairs, and that is before anything shared sits between them. This is the
+argument for making composition the unit of analysis rather than the actor —
+and the page is careful to say these are pairwise combinations, not observed
+interactions.
+
+![Three populations of 10, 50 and 100 agents, with 45, 1,225 and 4,950 possible pairs](docs/assets/15-state-space.png)
+
 **It is not a replacement for anything.** Model, prompt, identity, tool and
 data-layer defences all stay necessary. HIVE watches one level up: what the
 ecosystem becomes *while every layer below is working correctly*.

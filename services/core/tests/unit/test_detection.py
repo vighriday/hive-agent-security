@@ -7,6 +7,8 @@ down exactly which conditions are jointly necessary.
 
 from __future__ import annotations
 
+import json
+
 from hive_core.application.replay_service import ReplayService
 from hive_core.detection.ps001 import PS001Detector
 from hive_core.detection.ps002 import PS002Detector
@@ -206,6 +208,30 @@ class TestDeterminism:
 
         support_session.run_to_end()
         assert support_session.fingerprint() == before
+
+    def test_the_whole_ledger_is_byte_identical_across_replays(self) -> None:
+        """Determinism has to hold for the evidence itself, not just conclusions.
+
+        `fingerprint` deliberately omits timestamps, so it cannot catch a record
+        stamped from the wall clock. This compares every event the ledger holds
+        after a full detect-contain cycle, which is what a reproducible audit
+        trail actually requires.
+        """
+        from tests.conftest import MANIFESTS, SCENARIOS
+
+        def run() -> str:
+            session = ReplayService(MANIFESTS / "default.yaml", SCENARIOS / "p0_scenario.jsonl")
+            session.run_to_end()
+            session.apply_plan(session.plan_for(session.detect()[0]).id)
+            return json.dumps(
+                {
+                    "ledger": [e.model_dump() for e in session.ledger.all_events()],
+                    "immunity": [p.model_dump() for p in session.immunity.all_patterns()],
+                },
+                sort_keys=True,
+            )
+
+        assert run() == run()
 
     def test_stepping_and_jumping_converge_on_the_same_state(self) -> None:
         from tests.conftest import MANIFESTS, SCENARIOS

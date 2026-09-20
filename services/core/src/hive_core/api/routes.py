@@ -217,7 +217,7 @@ def list_immunity(scenario_id: str) -> dict[str, Any]:
 def promote_immunity(scenario_id: str, pattern_id: str, body: PromoteRequest) -> dict[str, Any]:
     session = _session(scenario_id)
     try:
-        pattern = session.immunity.promote(pattern_id, body.to)
+        pattern = session.immunity.promote(pattern_id, body.to, session.replay_clock)
     except LifecycleError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     return {"pattern": pattern.model_dump()}

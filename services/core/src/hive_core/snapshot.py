@@ -18,7 +18,6 @@ Regenerate with::
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -157,7 +156,10 @@ def write_snapshot(target: Path = SNAPSHOT_DIR) -> Path:
     _write(
         target / "index.json",
         {
-            "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
+            # Deliberately no timestamp. The snapshot is a pure function of the
+            # fixtures and the engine, and CI compares it byte-for-byte against
+            # a fresh run — a wall clock in here would make that check
+            # meaningless and would quietly contradict the determinism claim.
             "engine_version": "1.0.0",
             "scenarios": catalogue,
             "lab": {

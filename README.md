@@ -32,6 +32,23 @@ no backend needed, nothing to install
 > Tooling used to build it is listed in full under
 > [AI and external tools disclosure](#ai-and-external-tools-disclosure).
 
+<details>
+<summary><b>Reviewing this in five minutes? Read it in this order.</b></summary>
+
+1. [The problem, in four lines of log](#the-problem-in-four-lines-of-log) — the
+   whole thesis, and the fastest way to decide whether the rest is worth your
+   time.
+2. [Open the console](https://vighriday.github.io/hive-agent-security/console/) and press **Run to end**, then
+   **Apply recommended control**. That round trip is the product.
+3. [Does it actually work?](#does-it-actually-work) — what is tested, and what
+   each gate would catch.
+4. [What HIVE does not do](#what-hive-does-not-do) — the limits, stated by us
+   rather than found by you.
+
+Everything else is supporting detail.
+
+</details>
+
 ---
 
 ## The problem, in four lines of log
@@ -60,14 +77,42 @@ That is the class of risk HIVE exists to find.
 
 ---
 
-## Try it
+## Two things to look at
 
-| Where | What you get |
-| --- | --- |
-| **Hosted console** | **<https://vighriday.github.io/hive-agent-security/console/>** — step the replay, contain the finding, watch it verify |
-| **Overview** | **<https://vighriday.github.io/hive-agent-security/>** — what the problem is and why composition is the unit of analysis |
-| **Runs offline** | The page ships with the engine's recorded output at every replay position — fully interactive, no backend |
-| **Local, live** | Two commands, below |
+HIVE is two artefacts, and they are deliberately not the same kind of thing.
+
+| | Where | What it is |
+| --- | --- | --- |
+| **The overview** | <https://vighriday.github.io/hive-agent-security/> | The argument. Why a population is the unit of analysis, and where this sits beside defences you already run. Its diagrams are **conceptual simulations**, and the page labels every one of them as such. |
+| **The console** | <https://vighriday.github.io/hive-agent-security/console/> | The engine. Every finding, path, plan and verification on screen is output from the Python in this repository. None of it is drawn by hand. |
+
+Neither needs a backend or an API key. The console ships with the engine's
+recorded output at every replay position, so the hosted page is fully
+interactive with nothing running behind it — and it says **recorded session**
+on screen rather than implying a live service.
+
+### What is demonstrated, and what is illustrated
+
+A submission that blurs this line is worth less than one that draws it, so:
+
+**Produced by the engine.** Reproducible, covered by tests, byte-identical on
+every replay — this is what the console shows and what CI asserts:
+
+- the composed path and the finding, from the detection rules
+- the containment plan, its cost ordering, and the two controls it *rejects*
+  for severing declared work
+- the verification, measured by re-running the rules over the contained graph
+- the immunity pattern, and the Swarm Lab result for any recorded configuration
+
+**Illustrative, and labelled on the page itself.** The overview's agent
+populations, incident timelines, emergence values and blast-radius percentages
+are conceptual — they show how the reasoning works, not a measured result. The
+page states this in full: *"Every number, agent, graph and incident on this page
+is a conceptual simulation running in your browser. There are no customers, no
+deployments and no measured accuracy claims."*
+
+If you only trust one of the two, trust the console — and
+[the tests](#does-it-actually-work) behind it.
 
 <details>
 <summary><b>Run it locally in about a minute</b></summary>
@@ -96,10 +141,61 @@ and everything still works.
 
 ---
 
-## Watch it happen
+## The argument, on one page
 
-That sequence is not an illustration of the product — it *is* the product.
-Here it is running:
+The [overview](https://vighriday.github.io/hive-agent-security/) exists because the finding below is worthless if
+you do not already believe the problem is real. It makes that case in four
+moves.
+
+![The HIVE overview page: security for what happens between agents](docs/assets/10-overview-hero.png)
+
+**Same three actors, checked two ways.** On the left, each agent is evaluated
+alone: identity authenticated, tools within grant, behaviour nominal — three of
+three pass. On the right, the same three are connected through shared state, and
+a capability appears that nobody granted. Every check on the left is correct.
+Every check on the left is blind to the others.
+
+![Individual view passing three of three while the population view shows a path emerging](docs/assets/11-individual-vs-population.png)
+
+**It is not a replacement for anything.** Model, prompt, identity, tool and
+data-layer defences all stay necessary. HIVE watches one level up: what the
+ecosystem becomes *while every layer below is working correctly*.
+
+![The security layer stack, with population behaviour security added below the existing layers](docs/assets/12-not-prompt-injection.png)
+
+**The graph is the object of study.** Agents, data, tools, memory, MCP servers,
+identities and external systems in one continuously rebuilt view — and any node
+opened to show its grants, its baseline and what it has recently touched.
+
+![The behaviour graph with a node inspector open on a support agent](docs/assets/13-behavior-graph.png)
+
+**The problem is documented by people who are not us.** OWASP's agentic top ten,
+an open-problems paper, and three industry notes on emergent coordination and
+lateral movement between agents. The page is explicit that none of them is
+affiliated with HIVE and none of them validates it.
+
+![A table of six external research sources on multi-agent security](docs/assets/14-research.png)
+
+<details>
+<summary><b>What the overview does not claim</b></summary>
+
+The populations, timelines, emergence values and impact percentages on that page
+are conceptual simulations generated in the browser. They are there to show the
+shape of the reasoning. They are not measured results, and the page says so
+beside each of them, including a standing note that there are *"no customers, no
+deployments and no measured accuracy claims."*
+
+Everything below this point is different: it is the engine.
+
+</details>
+
+---
+
+## Watch the engine do it
+
+Now the other artefact. The four-line sequence above is not an illustration of
+the product — it *is* the product, and this is it running. Every panel below is
+output from `services/core`, captured from the console:
 
 ![The HIVE console with a composed risk path highlighted](docs/assets/00-hero.png)
 
@@ -426,6 +522,10 @@ The ones that carry weight:
 - **Contract is generated.** `contracts/openapi/hive-core-v1.json` is rendered
   from the running service and CI fails on any diff, so the committed spec cannot
   drift from the code.
+- **The hosted demo cannot drift.** The recording the public console replays is
+  regenerated from the engine in CI and compared byte for byte with the one in
+  the repository. If the engine changes and the recording does not, the build
+  fails — so the page you can click is the code you can read.
 - **The browser journey** runs the full operator flow — identically against the
   live engine and the recorded snapshot.
 
@@ -446,6 +546,9 @@ Stating this plainly is part of the design, not a disclaimer.
 - It does **not** learn autonomously. Patterns are drafts until a person
   promotes them.
 - The emergence score **ranks** findings. The factor list is what explains them.
+- The **overview page** is an argument, not evidence. Its populations, incidents
+  and percentages are conceptual simulations, labelled as such on the page. The
+  console is the part that produces real output.
 
 ---
 

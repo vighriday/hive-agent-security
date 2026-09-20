@@ -103,7 +103,9 @@ class ScenarioLoader:
             try:
                 raw = json.loads(line)
             except json.JSONDecodeError as exc:
-                raise ScenarioError(f"{path.name} line {line_number}: invalid JSON — {exc}") from exc
+                raise ScenarioError(
+                    f"{path.name} line {line_number}: invalid JSON — {exc}"
+                ) from exc
             try:
                 events.append(EventValidator.validate(raw))
             except EventValidationError as exc:
@@ -117,8 +119,12 @@ class ScenarioLoader:
                 "scenario would not replay as written."
             )
 
-        sequences = [event.sequence for event in events]
-        if len(set(sequences)) != len(sequences):
-            raise ScenarioError(f"{path.name} repeats sequence numbers; replay order is ambiguous.")
+        repeated = LedgerRepository.duplicate_sequences(events)
+        if repeated:
+            raise ScenarioError(
+                f"{path.name} repeats sequence numbers "
+                f"{', '.join(str(sequence) for sequence in repeated)}. Stepping one event and "
+                "advancing to a sequence would then disagree about how far the replay moved."
+            )
 
         return sorted(events, key=lambda event: event.sequence)

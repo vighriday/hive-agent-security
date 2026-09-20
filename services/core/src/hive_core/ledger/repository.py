@@ -116,7 +116,12 @@ class LedgerRepository:
             if not upcoming:
                 return []
             if to_sequence is None:
-                stepped = [upcoming[0]]
+                # Step over every event sharing the next sequence, not just the
+                # first. Taking one would drop its siblings from `upcoming`
+                # forever, so stepping and jumping would build different graphs
+                # from the same ledger.
+                nxt = upcoming[0].sequence
+                stepped = [e for e in upcoming if e.sequence == nxt]
             else:
                 stepped = [e for e in upcoming if e.sequence <= to_sequence]
             if not stepped:
@@ -142,4 +147,21 @@ class LedgerRepository:
             if event.event_id in seen and event.event_id not in duplicates:
                 duplicates.append(event.event_id)
             seen.add(event.event_id)
+        return duplicates
+
+    @staticmethod
+    def duplicate_sequences(events: list[ObservationEvent]) -> list[int]:
+        """Sequence numbers appearing more than once in *events*.
+
+        Deduplication is keyed on event id, so a fixture can repeat a sequence
+        without losing anything — and then replay ambiguously, because "advance
+        one event" and "advance to sequence N" would disagree about how many
+        events that is. Callers reject such a fixture at load time.
+        """
+        seen: set[int] = set()
+        duplicates: list[int] = []
+        for event in events:
+            if event.sequence in seen and event.sequence not in duplicates:
+                duplicates.append(event.sequence)
+            seen.add(event.sequence)
         return duplicates

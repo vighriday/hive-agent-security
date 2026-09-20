@@ -184,7 +184,6 @@ interface RecordedScenario {
 }
 
 interface RecordedIndex {
-  generated_at: string;
   engine_version: string;
   scenarios: ScenarioDescriptor[];
   lab: { held: (keyof SwarmConfig)[]; populations: number[]; keys: string[] };

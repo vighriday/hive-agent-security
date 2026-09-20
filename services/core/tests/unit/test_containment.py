@@ -14,6 +14,9 @@ from hive_core.application.replay_service import ReplayService
 from hive_core.containment.planner import apply_control
 from tests.conftest import PS001_TRIGGER_SEQUENCE
 
+#: Controls are stamped from the replay position rather than the wall clock.
+STAMP = "2026-09-19T10:31:00Z"
+
 
 @pytest.fixture
 def contained(support_session: ReplayService) -> ReplayService:

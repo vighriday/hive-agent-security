@@ -19,8 +19,6 @@ contained state exactly.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
-
 from hive_core.domain.models import ControlCapability, ControlExecution, ObservationEvent
 from hive_core.ledger.repository import LedgerRepository
 
@@ -44,8 +42,13 @@ class SimulatedControlAdapter:
 
     # ------------------------------------------------------------------
 
-    def apply(self, capability_id: str, plan_id: str) -> ControlExecution:
+    def apply(self, capability_id: str, plan_id: str, occurred_at: str) -> ControlExecution:
         """Issue *capability_id* for *plan_id* and return the execution record.
+
+        *occurred_at* comes from the replay position the control was issued at,
+        not from the wall clock. A ledger whose contents depend on when someone
+        clicked cannot be replayed byte-for-byte, and reproducibility is the
+        property the whole evidence argument rests on.
 
         Idempotent: issuing the same capability for the same plan twice returns
         the original record and appends no second event. An operator clicking
@@ -63,7 +66,7 @@ class SimulatedControlAdapter:
         if existing is not None:
             return existing
 
-        event = self._control_event(capability, plan_id)
+        event = self._control_event(capability, plan_id, occurred_at)
         self._ledger.append(event)
 
         execution = ControlExecution(
@@ -71,7 +74,7 @@ class SimulatedControlAdapter:
             plan_id=plan_id,
             capability_id=capability_id,
             state="success",
-            issued_at=_now(),
+            issued_at=occurred_at,
             result_event_ids=[event.event_id],
             reversible=capability.reversible,
         )
@@ -83,7 +86,9 @@ class SimulatedControlAdapter:
 
     # ------------------------------------------------------------------
 
-    def _control_event(self, capability: ControlCapability, plan_id: str) -> ObservationEvent:
+    def _control_event(
+        self, capability: ControlCapability, plan_id: str, occurred_at: str
+    ) -> ObservationEvent:
         """Build the ledger event that describes this control action.
 
         The context carries the precise edge to sever so that replaying the
@@ -104,7 +109,7 @@ class SimulatedControlAdapter:
         return ObservationEvent(
             event_id=f"ctl::{plan_id}::{capability.id}",
             sequence=_CONTROL_SEQUENCE_BASE + self._issued,
-            occurred_at=_now(),
+            occurred_at=occurred_at,
             actor="HIVE Control Plane",
             action="block",
             target=capability.target,
@@ -112,7 +117,3 @@ class SimulatedControlAdapter:
             provenance={"plan_id": plan_id, "issued_by": "simulated-control-adapter"},
             result="success",
         )
-
-
-def _now() -> str:
-    return datetime.now(UTC).isoformat(timespec="seconds")

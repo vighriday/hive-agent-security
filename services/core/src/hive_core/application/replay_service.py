@@ -101,6 +101,18 @@ class ReplayService:
         return self.advance_to(self._replay_bound)
 
     @property
+    def replay_clock(self) -> str:
+        """The timestamp of the replay's current position.
+
+        Controls and immunity records are stamped with this rather than with the
+        wall clock, so replaying a scenario twice produces a byte-identical
+        ledger. A record whose contents depend on when an operator clicked is
+        not reproducible evidence.
+        """
+        replayed = self.ledger.replayed()
+        return replayed[-1].occurred_at if replayed else "1970-01-01T00:00:00Z"
+
+    @property
     def at_end(self) -> bool:
         """True when the cursor has passed every scenario event."""
         return self.ledger.cursor >= self._replay_bound
@@ -211,7 +223,7 @@ class ReplayService:
         finding = next((f for f in self.detect() if f.id == plan.finding_id), None)
         expected_before = self._expected_relationships()
 
-        execution = self.adapter.apply(plan.recommended_capability_id, plan.id)
+        execution = self.adapter.apply(plan.recommended_capability_id, plan.id, self.replay_clock)
         control_events = [
             event
             for event in (self.ledger.event(event_id) for event_id in execution.result_event_ids)
@@ -239,7 +251,7 @@ class ReplayService:
 
         if plan.state == "verified" and finding is not None:
             finding.status = "contained"
-            self.immunity.record_from_finding(finding)
+            self.immunity.record_from_finding(finding, self.replay_clock)
 
         return plan
 

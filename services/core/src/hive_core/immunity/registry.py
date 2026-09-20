@@ -15,8 +15,6 @@ behaviour HIVE is arguing against.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
-
 from hive_core.domain.models import Finding, ImmunityPattern
 
 #: Legal lifecycle transitions. Promotion is one step at a time and reversible.
@@ -62,8 +60,11 @@ class ImmunityRegistry:
     # Creation
     # ------------------------------------------------------------------
 
-    def record_from_finding(self, finding: Finding) -> ImmunityPattern:
+    def record_from_finding(self, finding: Finding, recorded_at: str) -> ImmunityPattern:
         """Derive a draft pattern from a contained *finding*.
+
+        *recorded_at* is the replay position the containment happened at, so a
+        second replay of the same scenario produces an identical record.
 
         Recording the same finding twice returns the existing pattern rather
         than duplicating it, so replaying a scenario does not inflate the
@@ -82,7 +83,7 @@ class ImmunityRegistry:
             abstract_preconditions=list(_PRECONDITIONS.get(finding.rule_id, [])),
             evidence_basis=list(finding.evidence_event_ids),
             recommended_control_class=_CONTROL_CLASSES.get(finding.rule_id, "unclassified"),
-            created_at=_now(),
+            created_at=recorded_at,
         )
         self._patterns[pattern.id] = pattern
         return pattern
@@ -91,7 +92,7 @@ class ImmunityRegistry:
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def promote(self, pattern_id: str, to: str) -> ImmunityPattern:
+    def promote(self, pattern_id: str, to: str, promoted_at: str) -> ImmunityPattern:
         """Move *pattern_id* to lifecycle stage *to*, if the step is legal."""
         pattern = self._patterns.get(pattern_id)
         if pattern is None:
@@ -103,7 +104,7 @@ class ImmunityRegistry:
                 f"{', '.join(sorted(_TRANSITIONS.get(pattern.lifecycle, set()))) or 'nothing'}."
             )
         pattern.lifecycle = to  # type: ignore[assignment]
-        pattern.promoted_at = _now()
+        pattern.promoted_at = promoted_at
         return pattern
 
     # ------------------------------------------------------------------
@@ -119,7 +120,3 @@ class ImmunityRegistry:
     def clear(self) -> None:
         """Drop every pattern. Used when a replay session restarts."""
         self._patterns.clear()
-
-
-def _now() -> str:
-    return datetime.now(UTC).isoformat(timespec="seconds")
